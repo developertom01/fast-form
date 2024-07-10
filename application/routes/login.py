@@ -60,7 +60,7 @@ async def submit_form(request:Request,response:Response, origin:str =Query("web"
     print(email,password)
     user_row = None
     try:
-        async with await conn.execute("SELECT id, email, password FROM users WHERE email=? LIMIT 1",{"email": email}) as cur:
+        async with await conn.execute("SELECT id, email, password FROM users WHERE email=? LIMIT 1",(email, )) as cur:
             user_row =await cur.fetchone()
     except Exception as e:
         logging.error(str(e), stack_info=True)
@@ -83,7 +83,7 @@ async def submit_form(request:Request,response:Response, origin:str =Query("web"
         context={
             "title": "Login",
             "message": {
-               "detail": "User not found",
+               "detail": "Login failed: User not found",
                "type": "error"
             }
         }
@@ -96,7 +96,7 @@ async def submit_form(request:Request,response:Response, origin:str =Query("web"
         context={
             "title": "Login",
             "message": {
-               "detail": "User not found",
+               "detail": "Login failed: Invalid password",
                "type": "error"
             }
         }
