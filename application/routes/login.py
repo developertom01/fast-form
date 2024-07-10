@@ -44,8 +44,8 @@ def validate_login_form(email: str, password:str):
         
     return errors, error_occurred
 
-@login_router.post("/",name="submit-form",)
-async def submit_form(request:Request,response:Response, origin:str =Query("web"), email= Form(default=""), password= Form(default=""), conn:Connection =  Depends(get_db)):
+@login_router.post("/",name="submit-login-form", response_class=RedirectResponse)
+async def submit_form(request:Request, origin:str =Query("web"), email= Form(default=""), password= Form(default=""), conn:Connection =  Depends(get_db)):
     errors, error_occurred = validate_login_form(email=email, password= password)
 
     if error_occurred:
@@ -59,7 +59,6 @@ async def submit_form(request:Request,response:Response, origin:str =Query("web"
         }
     )
 
-    print(email,password)
     user_row = None
     try:
         async with await conn.execute("SELECT id, email, password FROM users WHERE email=? LIMIT 1",(email, )) as cur:
@@ -91,7 +90,8 @@ async def submit_form(request:Request,response:Response, origin:str =Query("web"
         }
     )
 
-    if not compare_password(hashed= user_row["password"],plain_password= password):
+    user_id, _ , user_password = user_row
+    if not compare_password(hashed= user_password, plain_password= password):
         return templates.TemplateResponse(
         request= request,
         name="login.html",
@@ -107,15 +107,19 @@ async def submit_form(request:Request,response:Response, origin:str =Query("web"
     if origin == "cli":
         code = nanoid.generate(size=6)
         cache[code] = { 
-            "user_id":user_row["id"], 
+            "user_id":user_id, 
             "time": datetime.now().isoformat() 
         }
-        return RedirectResponse(f"/login-cli-verify/?code={code}")
+        return RedirectResponse(f"/login-cli-verify/?code={code}", status_code=303)
     
     session_value = uuid.uuid4()
     cache[session_value] = {
-        "user_id": user_row[id],
+        "user_id": user_id,
         "time": datetime.now().isoformat() 
     }
-    response.set_cookie("session", session_value)
-    return RedirectResponse("/")
+    response = RedirectResponse(url="/", status_code=303)
+    response.set_cookie(
+        key="session",
+        value= session_value
+        )
+    return response
