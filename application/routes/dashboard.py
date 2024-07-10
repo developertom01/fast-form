@@ -1,11 +1,16 @@
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Request, Depends
 from utils.templates import templates
-
+from application.dependents import login_required
+from fastapi.responses import RedirectResponse
+import logging
 
 index_route= APIRouter()
 
 @index_route.get("/", name="index")
-async def login(request: Request, response: Response):    
+async def index(request: Request, user = Depends(login_required)): 
+    if user is None:
+        logging.info("User not logged in, redirecting to /login")
+        return RedirectResponse("/login",status_code=303)
     response= templates.TemplateResponse(
         request= request,
         name="index.html",

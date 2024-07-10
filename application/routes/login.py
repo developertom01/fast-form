@@ -112,7 +112,7 @@ async def submit_form(request:Request, origin:str =Query("web"), email= Form(def
         }
         return RedirectResponse(f"/login-cli-verify/?code={code}", status_code=303)
     
-    session_value = uuid.uuid4()
+    session_value = nanoid.generate(size=32)
     cache[session_value] = {
         "user_id": user_id,
         "time": datetime.now().isoformat() 

@@ -7,6 +7,7 @@ config = {
     "app_name":"Fast Form",
     "app_env": os.environ.get("APP_ENV", "dev"),
     "debug": os.environ.get("APP_ENV", "dev") == "dev",
-    "app_description":"A simple way to generate form for users"
+    "app_description":"A simple way to generate form for users",
+    
 
 }
