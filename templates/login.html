@@ -36,7 +36,16 @@
                     </div
             {% endif %}
         </div>
-    
+        <div class="flex">
+            <div class="flex-1"></div>
+            <div class="flex-[4]">
+                Does not have an account? 
+                <a href="/signup" class="underline">Create Account </a>
+
+            </div>
+        </div>
+     
+
         <div class = "flex items-center justify-center">
             <div class="flex-1"></div>
             <button form="loginForm" class="bg-teal-500 p-2 rounded-sm w-full text-white font-bold flex-[4]" type="submit"> Login </button>
@@ -44,4 +53,5 @@
 
     </div>
 </form>
+
 {% endblock  %}
