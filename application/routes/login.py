@@ -14,12 +14,13 @@ import logging
 login_router= APIRouter()
 
 @login_router.get("/",name="login")
-async def login(request: Request):
+async def login(request: Request, origin:str =Query("web"),):
     return templates.TemplateResponse(
         request= request,
         name="login.html",
         context={
             "title": "Login",
+            "origin": origin
         }
     )
 
@@ -44,7 +45,7 @@ def validate_login_form(email: str, password:str):
     return errors, error_occurred
 
 @login_router.post("/",name="submit-form",)
-async def submit_form(request:Request,response:Response, origin:str =Query("web") , email= Form(default=""), password= Form(default=""), conn:Connection =  Depends(get_db)):
+async def submit_form(request:Request,response:Response, origin:str =Query("web"), email= Form(default=""), password= Form(default=""), conn:Connection =  Depends(get_db)):
     errors, error_occurred = validate_login_form(email=email, password= password)
 
     if error_occurred:
@@ -53,7 +54,8 @@ async def submit_form(request:Request,response:Response, origin:str =Query("web"
         name="login.html",
         context={
             "title": "Login",
-            "errors": errors
+            "errors": errors,
+            "origin": origin
         }
     )
 
