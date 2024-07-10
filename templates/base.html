@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>{% block title %} Smart Form {% endblock %} </title>
+
+    <script defer>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {}
+            }
+          }
+        }
+      </script>
+</head>
+<body>
+    <div class="py-5 px-3 md:px-8 lg:px-32 flex flex-col h-screen">
+        <header class="flex justify-between">
+            <h1 class="text-3xl font-bold">Smart Form</h1>
+            <nav>
+                <ul class="flex gap-x-2">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </nav>
+            
+        </header>
+
+        <main class="flex-1">
+            {% if message %}
+                {% if message.type == "error" %}
+                    <div id="messageBanner" class = "bg-red-300 w-full p-4 flex justify-center items-start">
+                        <p class="text-white"> {{message.detail}} </p>
+                    </div>
+                {% endif %}
+
+                {% if message.type == "success" %}
+                <div id="messageBanner"  class = "bg-green-300 w-full p-4 flex justify-center items-start">
+                    <p class="text-white"> {{message.detail}} </p>
+                </div>
+            {% endif %}
+            {% endif %}
+            {% block content %} 
+
+            {% endblock %}
+        </main>
+        
+        <footer class="mt-auto">
+            <p>&copy; 2024 Fast Form</p>
+        </footer>
+    </div>
+
+    <script>
+        const banner = document.getElementById("messageBanner" )
+
+        if (banner){
+            setTimeout(()=>{
+                banner.remove()
+            },5000)
+        }
+    </script>
+</body>
+</html>

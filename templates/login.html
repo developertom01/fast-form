@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %} Login {% endblock  %}
+
+{% block content  %}
+
+<form class="h-full w-full flex flex-col gap-y-5 justify-center items-center" id = "loginForm" action="/login" method="POST" >
+    <h3 class="font-bold text-xl">Login here</h3>
+    <div class ="flex flex-col w-[500px] gap-y-4">
+      <div class = "flex flex-col gap-y-2">
+            <div class = "flex items-center justify-center">
+                <label class="flex-1" for="email"> Email: </label>
+                <input type="email" name="email" class="outline outline-teal-400 p-2 rounded-sm flex-[4]" id="email" />
+            </div>
+            {% if errors and errors.email %}
+                    <div class = "flex items-center justify-center">
+                        <div class="flex-1 flex flex-col gap-x-1"></div>
+                        {% for error in errors.email %}
+                            <small class = "text-xs text-red-500 flex-[4]"> {{ error }} </small>
+                        {% endfor %}
+                    </div
+            {% endif %}
+        </div>
+    
+        <div class = "flex flex-col gap-y-2">
+            <div class = "flex items-center justify-center">
+                <label class="flex-1" for="password"> Password: </label>
+                <input type="password" name="password" class="outline outline-teal-400 p-2 rounded-sm flex-[4]" id="password" />
+            </div>
+            {% if errors and errors.password %}
+                    <div class = "flex items-center justify-center">
+                        <div class="flex-1 flex flex-col gap-x-1"></div>
+                        {% for error in errors.password %}
+                            <small class = "text-xs text-red-500 flex-[4]"> {{ error }} </small>
+                        {% endfor %}
+                    </div
+            {% endif %}
+        </div>
+    
+        <div class = "flex items-center justify-center">
+            <div class="flex-1"></div>
+            <button form="loginForm" class="bg-teal-500 p-2 rounded-sm w-full text-white font-bold flex-[4]" type="submit"> Login </button>
+        </div
+
+    </div>
+</form>
+{% endblock  %}
