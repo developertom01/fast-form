@@ -1,23 +1,30 @@
-from fastapi import APIRouter, Request, Form, Depends, Query, Response
+from fastapi import APIRouter, Request, Form, Depends, Query
 from fastapi.responses import RedirectResponse
 from datetime import datetime
 from internal.cache import cache
-import uuid
 import nanoid
 from utils.templates import templates
 from utils.password_hasher import compare_password
 from internal.database import get_db
 from aiosqlite import Connection
+from application.dependents.login_required import login_required
+from application.models.user import User
 import re
 import logging
+
+
+TEMPLATE_FILE_NAME = "login.html"
 
 login_router= APIRouter()
 
 @login_router.get("/",name="login")
-async def login(request: Request, origin:str =Query("web"),):
+async def login(request: Request, origin:str =Query("web"), user: User | None = Depends(login_required)):
+    if user is not None:
+        return redirect_when_logged_in(user_id=user.id, origin=origin)
+
     return templates.TemplateResponse(
         request= request,
-        name="login.html",
+        name=TEMPLATE_FILE_NAME,
         context={
             "title": "Login",
             "origin": origin
@@ -44,6 +51,26 @@ def validate_login_form(email: str, password:str):
         
     return errors, error_occurred
 
+def redirect_when_logged_in(user_id, origin: str):
+    url = "/"
+    if origin == "cli":
+        url = "/login-cli-verify"
+
+    session_value = nanoid.generate(size=32)
+    cache[session_value] = {
+        "user_id": user_id,
+        "time": datetime.now().isoformat() 
+    }
+
+    response = RedirectResponse(url=url, status_code=303)
+    response.set_cookie(
+        key="session",
+        value= session_value
+        )
+    
+    return response
+    
+
 @login_router.post("/",name="submit-login-form", response_class=RedirectResponse)
 async def submit_form(request:Request, origin:str =Query("web"), email= Form(default=""), password= Form(default=""), conn:Connection =  Depends(get_db)):
     errors, error_occurred = validate_login_form(email=email, password= password)
@@ -51,7 +78,7 @@ async def submit_form(request:Request, origin:str =Query("web"), email= Form(def
     if error_occurred:
         return templates.TemplateResponse(
         request= request,
-        name="login.html",
+        name=TEMPLATE_FILE_NAME,
         context={
             "title": "Login",
             "errors": errors,
@@ -67,7 +94,7 @@ async def submit_form(request:Request, origin:str =Query("web"), email= Form(def
         logging.error(str(e), stack_info=True)
         return templates.TemplateResponse(
         request= request,
-        name="login.html",
+        name=TEMPLATE_FILE_NAME,
         context={
             "title": "Login",
             "message":  {
@@ -80,7 +107,7 @@ async def submit_form(request:Request, origin:str =Query("web"), email= Form(def
     if user_row is None:
         return templates.TemplateResponse(
         request= request,
-        name="login.html",
+        name=TEMPLATE_FILE_NAME,
         context={
             "title": "Login",
             "message": {
@@ -94,7 +121,7 @@ async def submit_form(request:Request, origin:str =Query("web"), email= Form(def
     if not compare_password(hashed= user_password, plain_password= password):
         return templates.TemplateResponse(
         request= request,
-        name="login.html",
+        name=TEMPLATE_FILE_NAME,
         context={
             "title": "Login",
             "message": {
@@ -104,22 +131,4 @@ async def submit_form(request:Request, origin:str =Query("web"), email= Form(def
         }
     )
 
-    if origin == "cli":
-        code = nanoid.generate(size=6)
-        cache[code] = { 
-            "user_id":user_id, 
-            "time": datetime.now().isoformat() 
-        }
-        return RedirectResponse(f"/login-cli-verify/?code={code}", status_code=303)
-    
-    session_value = nanoid.generate(size=32)
-    cache[session_value] = {
-        "user_id": user_id,
-        "time": datetime.now().isoformat() 
-    }
-    response = RedirectResponse(url="/", status_code=303)
-    response.set_cookie(
-        key="session",
-        value= session_value
-        )
-    return response
+    return redirect_when_logged_in(user_id=user_id, origin=origin)

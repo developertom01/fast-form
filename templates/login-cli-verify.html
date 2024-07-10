@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title  %} Dashboard {% endblock %}
+
+{% block content %}
+
+<div class="flex flex-col h-full justify-center items-center gap-y-5 "> 
+    <h3 class="text-xl font-bold"> Verification Code </h3>
+    <div class="flex flex-col gap-y-2">
+        <p> Copy code to ClI and verify </p>
+        <p class="text-center border border-dashed border-teal-400 p-3">{{code}} </p>    
+    </div
+
+</div>
+{% endblock  %}

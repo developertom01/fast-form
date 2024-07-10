@@ -10,7 +10,7 @@ index_route= APIRouter()
 async def index(request: Request, user = Depends(login_required)): 
     if user is None:
         logging.info("User not logged in, redirecting to /login")
-        return RedirectResponse("/login",status_code=303)
+        return RedirectResponse("/login/?origin=web",status_code=303)
     response= templates.TemplateResponse(
         request= request,
         name="index.html",
