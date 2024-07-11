@@ -8,7 +8,7 @@ from utils.password_hasher import compare_password
 from internal.database import get_db
 from aiosqlite import Connection
 from application.dependents.login_required import login_required
-from application.models.user import User
+from application.models import User
 import re
 import logging
 
@@ -18,9 +18,9 @@ TEMPLATE_FILE_NAME = "login.html"
 login_router= APIRouter()
 
 @login_router.get("/",name="login")
-async def login(request: Request, origin:str =Query("web"), user: User | None = Depends(login_required)):
+async def login(request: Request, origin:str =Query("web"), token:str =Query(""), user: User | None = Depends(login_required)):
     if user is not None:
-        return redirect_when_logged_in(user_id=user.id, origin=origin)
+        return redirect_when_logged_in(user_id=user.id, origin=origin, token = token)
 
     return templates.TemplateResponse(
         request= request,
@@ -51,13 +51,13 @@ def validate_login_form(email: str, password:str):
         
     return errors, error_occurred
 
-def redirect_when_logged_in(user_id, origin: str):
+def redirect_when_logged_in(user_id, origin: str, token: str|None = None):
     url = "/"
     if origin == "cli":
-        url = "/login-cli-verify"
+        url = f"/login-cli-verify?origin=cli&token={token}"
 
-    session_value = nanoid.generate(size=32)
-    cache[session_value] = {
+    session_key = nanoid.generate(size=32)
+    cache[f"session-{session_key}"] = {
         "user_id": user_id,
         "time": datetime.now().isoformat() 
     }
@@ -65,14 +65,14 @@ def redirect_when_logged_in(user_id, origin: str):
     response = RedirectResponse(url=url, status_code=303)
     response.set_cookie(
         key="session",
-        value= session_value
+        value= session_key
         )
     
     return response
     
 
 @login_router.post("/",name="submit-login-form", response_class=RedirectResponse)
-async def submit_form(request:Request, origin:str =Query("web"), email= Form(default=""), password= Form(default=""), conn:Connection =  Depends(get_db)):
+async def submit_form(request:Request, origin:str =Query("web"), token:str =Query(""), email= Form(default=""), password= Form(default=""), conn:Connection =  Depends(get_db)):
     errors, error_occurred = validate_login_form(email=email, password= password)
 
     if error_occurred:
@@ -131,4 +131,4 @@ async def submit_form(request:Request, origin:str =Query("web"), email= Form(def
         }
     )
 
-    return redirect_when_logged_in(user_id=user_id, origin=origin)
+    return redirect_when_logged_in(user_id=user_id, origin=origin, token=token)

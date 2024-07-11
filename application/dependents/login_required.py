@@ -13,7 +13,7 @@ async def login_required(session: Annotated[str | None, Cookie()] = None, conn: 
         if not session:
             raise NotLoginException("Authentication required")
     
-        session_info:dict | None = cache.get(session)
+        session_info:dict | None = cache.get(f"session-{session}")
 
         if session_info is None:
             raise NotLoginException("Authentication required")
