@@ -5,7 +5,7 @@ import config
 import json
 import webbrowser
 
-APP_STORAGE_FILE_NAME=".fast_form"
+APP_STORAGE_FILE_NAME = ".fast_form"
 
 user_path = os.path.expanduser("~")
 
@@ -19,11 +19,12 @@ name=Tom Iss
 token=2342342342sdfsdfsdfsdf
 """
 
+
 def sanitize_value(value: str):
-    return value.replace('"',"").strip()
+    return value.replace('"', "").strip()
 
 
-def parse_conf_file(lines: list[str])->dict:
+def parse_conf_file(lines: list[str]) -> dict:
     conf = {}
     for line in lines:
         if "=" not in line or line.startswith("#"):
@@ -35,18 +36,15 @@ def parse_conf_file(lines: list[str])->dict:
     return conf
 
 
-
 def check_login():
     path = os.path.join(user_path, APP_STORAGE_FILE_NAME)
     if not os.path.exists(path):
         with open(path, "w"):
             ...
-    
+
     lines = []
     with open(path, "r") as f:
         lines = f.readlines()
-
-    print(path, lines)
 
     parsed_conf = parse_conf_file(lines)
 
@@ -60,10 +58,10 @@ def check_login():
     if user_id is None or token is None or email is None:
         return None
 
-    return UserConf(id=user_id, name=name, email=email,token=token)
+    return UserConf(id=user_id, name=name, email=email, token=token)
 
 
-def write_conf_to_file(id:str,name:str, email:str, session:str)->bool:
+def write_conf_to_file(id: str, name: str, email: str, session: str) -> bool:
     file_content = f"id={id}\nemail={email}\nname={name}\ntoken={session}\n"
 
     path = os.path.join(user_path, APP_STORAGE_FILE_NAME)
@@ -72,9 +70,9 @@ def write_conf_to_file(id:str,name:str, email:str, session:str)->bool:
             f.write(file_content)
     except Exception:
         return False
-    
+
     return True
-    
+
 
 def login():
     base_url = config.config.get("app_url")
@@ -93,24 +91,21 @@ def login():
 
     if len(code) != 6:
         raise Exception("You entered invalid code")
-    
-    data =json.dumps(
-        {
-        "code": code,
-        "token": token
-    }
-    )
 
-    resp = requests.post(f"{config.config["app_url"]}/login-cli-verify/verify", data=data)
+    data = json.dumps({"code": code, "token": token})
+
+    resp = requests.post(
+        f"{config.config["app_url"]}/login-cli-verify/verify", data=data
+    )
 
     status = resp.status_code
 
     if status == 403 or status == 400:
         raise Exception(resp.json().get("detail") or "User login failed")
-    
+
     if status != 200:
         return None
-    
+
     response_data = resp.json()
     user = response_data.pop("user")
     token = response_data.get("token")
@@ -119,12 +114,13 @@ def login():
     name = user.get("name")
     email = user.get("email")
 
-    is_logged_in= write_conf_to_file(id=user_id, email=email,name=name, session=token)
+    is_logged_in = write_conf_to_file(id=user_id, email=email, name=name, session=token)
 
     if not is_logged_in:
         return None
-    
-    return UserConf(id=user_id, email=email,name=name,token=token)
+
+    return UserConf(id=user_id, email=email, name=name, token=token)
+
 
 def authenticate():
     user = check_login() or login()
@@ -132,6 +128,5 @@ def authenticate():
     if user is None:
         print("Login failed, Ending program")
         quit(0)
-    
+
     return user
-    

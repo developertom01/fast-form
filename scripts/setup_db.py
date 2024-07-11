@@ -1,9 +1,10 @@
 import sqlite3
 import os
 
+
 def read_sql():
     sqls = {}
-    path = os.path.join(os.getcwd(), "scripts","tables")
+    path = os.path.join(os.getcwd(), "scripts", "tables")
     for file in os.listdir(path=path):
         filename, ext = os.path.splitext(file)
         if ext != ".sql":
@@ -16,7 +17,6 @@ def read_sql():
 
     return sqls
 
-        
 
 path = os.path.join(os.getcwd(), "db.sqlite")
 

@@ -6,16 +6,17 @@ from application.routes import router
 
 
 app = FastAPI(
-    debug = config.get("debug"),
-    description = config.get("app_description"),
-    title = config.get("app_name"),
+    debug=config.get("debug"),
+    description=config.get("app_description"),
+    title=config.get("app_name"),
 )
 
-app.add_middleware(CORSMiddleware, 
-    allow_credentials=True,    
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_origins=["http://localhost:8000"]
+    allow_origins=["http://localhost:8000"],
 )
 
 app.mount("/static", StaticFiles(directory="public/static"), name="static")

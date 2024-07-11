@@ -9,80 +9,73 @@ from application.dependents.login_required import login_required
 from internal.cache import cache
 from utils.templates import templates
 
-verify_route= APIRouter()
+verify_route = APIRouter()
 
 TEMPLATE_FILE_NAME = "login-cli-verify.html"
 
+
 @verify_route.get("/")
-def show_code(request:Request, user = Depends(login_required), token = Query(default="")):
+def show_code(request: Request, user=Depends(login_required), token=Query(default="")):
     code = cache.get(token)
     message = None
     if code is None:
-        message = {
-            "type": "error",
-            "detail": "Token not found"
-        }
+        message = {"type": "error", "detail": "Token not found"}
 
     if user is None:
         logging.info("User not logged in, redirecting to /login")
-        return RedirectResponse(f"/login/?origin=cli&token={token}",status_code=303)
-
+        return RedirectResponse(f"/login/?origin=cli&token={token}", status_code=303)
 
     cache[f"{code}.{token}"] = user
     return templates.TemplateResponse(
-        request= request,
+        request=request,
         name=TEMPLATE_FILE_NAME,
-        context={
-            "title": "Verify",
-            "code": code,
-            "message": message
-        }
+        context={"title": "Verify", "code": code, "message": message},
     )
+
 
 @verify_route.get("/get-token", status_code=200)
 async def get_token():
     token = nanoid.generate(size=32)
-    code = nanoid.generate(size=6,alphabet="1234567890ABCXYZ").upper()
+    code = nanoid.generate(size=6, alphabet="1234567890ABCXYZ").upper()
     cache[token] = code
 
     return {"token": token}
 
+
 class VerifyTokenRequest(BaseModel):
-    token:str | None = None
-    code:str | None = None
+    token: str | None = None
+    code: str | None = None
+
 
 @verify_route.post("/verify", status_code=200)
 async def verify_code(payload: VerifyTokenRequest):
-    print(payload)
     status = 200
     error = ""
-    is_error=False
+    is_error = False
     if not payload.token or not payload.code:
         is_error = True
         error = "token and code is required"
         status = 400
-        
+
     stored_code = cache.get(payload.token)
     if not payload.code or payload.code != stored_code:
         is_error = True
         error = "Invalid code"
         status = 403
 
-    user= cache.get(f"{payload.code}.{payload.token}")
+    user = cache.get(f"{payload.code}.{payload.token}")
     if user is None:
         is_error = True
         error = "Session expired"
         status = 403
 
-    if is_error:  
-        return Response({"detail":error}, status_code=status)
-    
+    if is_error:
+        return Response({"detail": error}, status_code=status)
+
     session_key = nanoid.generate(size=32)
 
     cache[f"session-{session_key}"] = {
         "user_id": user.id,
-        "time":datetime.now().isoformat()
+        "time": datetime.now().isoformat(),
     }
     return CliLogin(user=user, token=session_key)
-        
-    
