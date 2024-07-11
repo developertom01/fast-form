@@ -22,6 +22,7 @@ class FormBuilder:
             file_path = input("Enter file path: ")
             if os.path.exists(file_path):
                 return file_path
+            print("Invalid file path")
 
     def get_file_type(self, filename: str):
         ext = os.path.splitext(filename)[1].lower()
@@ -181,9 +182,3 @@ class FormBuilder:
 
                 f.write(f"Your answer: {answer} ")
                 f.write("\n")
-
-
-# Example usage:
-if __name__ == "__main__":
-    form_builder = FormBuilder()
-    form_builder.get_file_path()

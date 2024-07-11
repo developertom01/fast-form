@@ -8,15 +8,15 @@ from lib.form import (
 )
 
 
-def build():
+def build(path:str  = ""):
     form_builder = FormBuilder()
     # Prompt user for file path and check if file path exists
-    path: str
-    try:
-        path = form_builder.get_file_path()
-    except InvalidFilePathError as e:
-        print(e)
-        return
+    if path is None or path == "":
+        try:
+            path = form_builder.get_file_path()
+        except InvalidFilePathError as e:
+            print(e)
+            return
 
     try:
         file_type = form_builder.get_file_type(path)
@@ -38,11 +38,4 @@ def build():
         print(questions_validation_error)
         return
 
-    # If there is no error then let's build the form
-    answers = form_builder.build_form(data=data)
-
-    # Print Results
-    form_builder.print_questions_and_answers(data, answers)
-
-    path = input("Enter file path to output file: ")
-    form_builder.write_questions_and_answers_to_file(path, data, answers)
+    return data

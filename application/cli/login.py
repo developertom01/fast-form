@@ -5,9 +5,7 @@ import config
 import json
 import webbrowser
 
-APP_STORAGE_FILE_NAME = ".fast_form"
 
-user_path = os.path.expanduser("~")
 
 """
 File format should be
@@ -37,7 +35,7 @@ def parse_conf_file(lines: list[str]) -> dict:
 
 
 def check_login():
-    path = os.path.join(user_path, APP_STORAGE_FILE_NAME)
+    path = config.config.get("config_file_path")
     if not os.path.exists(path):
         with open(path, "w"):
             ...
@@ -64,7 +62,7 @@ def check_login():
 def write_conf_to_file(id: str, name: str, email: str, session: str) -> bool:
     file_content = f"id={id}\nemail={email}\nname={name}\ntoken={session}\n"
 
-    path = os.path.join(user_path, APP_STORAGE_FILE_NAME)
+    path = config.config.get("config_file_path")
     try:
         with open(path, "w") as f:
             f.write(file_content)
