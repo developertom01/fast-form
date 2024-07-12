@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, Query
 from datetime import datetime
 from lib.form import FormBuilder
 from pydantic import BaseModel, Field
@@ -7,10 +7,15 @@ from application.models import User
 from aiosqlite import Connection
 from internal.database import get_db
 from nanoid import generate
-from application.http.dependents import login_required
+from application.http.dependents import (
+    login_required,
+    get_pagination_parameters,
+    PaginationParameters,
+)
 from application.exceptions import UserNotLoggedInException, ValidationException
 import logging
 import json
+from utils.templates import templates
 
 logger = logging.getLogger(__name__)
 
@@ -122,9 +127,73 @@ async def create_form(
         if isinstance(e, UserNotLoggedInException):
             status = 401
             error = "UnAuthorized"
-            
+
         elif isinstance(e, ValidationException):
             error = e.errors
             status = 400
-            
+
+        return Response(json.dumps({"detail": error}), status_code=status)
+
+
+@form_route.get("/")
+async def get_user_forms(
+    user: User | None = Depends(login_required),
+    db_conn: Connection = Depends(get_db),
+    pagination_params:PaginationParameters = Depends(get_pagination_parameters)
+):
+
+    try:
+        if user is None:
+            raise UserNotLoggedInException("User not logged in")
+
+        forms_itr = []
+        async with db_conn.execute(
+            """
+            WITH total_count AS (
+            SELECT COUNT(DISTINCT id) as total FROM forms
+            WHERE forms.user_id=?
+            )
+
+            WITH paginated_data AS (
+                 forms.id AS id
+                forms.title AS title
+                forms.description AS description
+                forms.user_id AS user_id
+                forms.published_at AS published_at
+                forms.created_at AS created_at
+
+                fq.id AS question_id
+                fq.question AS question_question
+                fq.type AS question_type
+                fq.is_required AS question_is_required
+                fq.form_at AS question_form_id
+
+                fqc.id AS question_choice_id
+                fqc.choice AS question_choice_choice
+                fqc.question_id AS choice_question_id
+
+                SELECT  FROM forms 
+                LEFT JOIN form_questions AS fq ON forms.id=fq.form_id
+                LEFT JOIN form_question_choices AS fqc ON fq.id=fqc.question_id
+
+                WHERE forms.user_id=?
+                LIMIT=?
+                OFFSET=?
+            )
+
+            SELECT total_count.total AS count, paginated_data.*
+            """,
+            (user.id, pagination_params.limit, pagination_params.offset),
+        ) as cur:
+            forms_itr = await cur.fetchmany()
+
+    except Exception as e:
+        logger.error(str(e))
+        status = 500
+        error = "Server error"
+
+        if isinstance(e, UserNotLoggedInException):
+            status = 401
+            error = "UnAuthorized"
+
         return Response(json.dumps({"detail": error}), status_code=status)
