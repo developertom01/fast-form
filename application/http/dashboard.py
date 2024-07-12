@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Depends
 from utils.templates import templates
-from application.dependents import login_required
+from application.http.dependents import login_required
 from fastapi.responses import RedirectResponse
 import logging
 

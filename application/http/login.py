@@ -7,7 +7,7 @@ from utils.templates import templates
 from utils.password_hasher import compare_password
 from internal.database import get_db
 from aiosqlite import Connection
-from application.dependents.login_required import login_required
+from application.http.dependents import login_required
 from application.models import User
 import re
 import logging
