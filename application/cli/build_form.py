@@ -8,7 +8,7 @@ from lib.form import (
 )
 
 
-def build(path:str  = ""):
+def build(path: str = ""):
     form_builder = FormBuilder()
     # Prompt user for file path and check if file path exists
     if path is None or path == "":

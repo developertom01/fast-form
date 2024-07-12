@@ -6,11 +6,11 @@ import time
 import argparse
 
 
-
-
 def add_args(parser):
-    parser.add_argument('action', help='Action to execute', choices = ['signin', 'signout', "build"])
-    parser.add_argument('--file',"-f", required=False, help='Add file path')
+    parser.add_argument(
+        "action", help="Action to execute", choices=["signin", "signout", "build"]
+    )
+    parser.add_argument("--file", "-f", required=False, help="Add file path")
 
 
 def main():
@@ -23,10 +23,12 @@ def main():
         print("Welcome ", user)
         return
     if args.action == "signout":
-        confirmation = input("Are you sure you want to logout? Type Y or Yes to continue: ")
+        confirmation = input(
+            "Are you sure you want to logout? Type Y or Yes to continue: "
+        )
         if confirmation.lower() == "y" or confirmation.lower() == "yes":
             try:
-             logout()
+                logout()
             finally:
                 print("You have successfully logged out")
                 quit(0)
@@ -39,6 +41,7 @@ def main():
 
         print(data)
 
-#Entry point
+
+# Entry point
 if __name__ == "__main__":
     main()

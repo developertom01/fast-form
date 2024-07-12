@@ -6,7 +6,6 @@ import json
 import webbrowser
 
 
-
 """
 File format should be
 
