@@ -10,7 +10,11 @@ index_route = APIRouter()
 
 
 @index_route.get("/", name="index")
-async def index(request: Request, user=Depends(login_required),forms_service:FetchPaginatedForm =  Depends(FetchPaginatedForm)):
+async def index(
+    request: Request,
+    user=Depends(login_required),
+    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
+):
     if user is None:
         logging.info("User not logged in, redirecting to /login")
         return RedirectResponse("/login/?origin=web", status_code=303)
@@ -23,8 +27,8 @@ async def index(request: Request, user=Depends(login_required),forms_service:Fet
             name="index.html",
             context={
                 "title": "Dashboard",
-                "forms":form_resource.model_dump(),
-                "user": dict(user)
+                "forms": form_resource.model_dump(),
+                "user": dict(user),
             },
         )
     except Exception as e:
@@ -35,8 +39,8 @@ async def index(request: Request, user=Depends(login_required),forms_service:Fet
             context={
                 "title": "Dashboard",
                 "message": {
-                    "type":"error",
-                    "detail":"An error occured while fetching forms. Reload page to retry"
-                }
+                    "type": "error",
+                    "detail": "An error occured while fetching forms. Reload page to retry",
+                },
             },
         )
