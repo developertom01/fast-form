@@ -15,7 +15,6 @@ class FetchPaginatedForm:
         self.pagination_params = pagination_params
 
     async def fetch(self, user: User) -> PaginationResource[Form]:
-        print("Limit", self.pagination_params.limit, user.id)
         forms_itr = []
         async with self.conn.execute(
             """
