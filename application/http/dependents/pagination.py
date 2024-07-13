@@ -15,7 +15,5 @@ def get_pagination_parameters(page:int |None = Query(default=1), size:int | None
     if page < 1 or size < 1:
         raise ValueError("Page and size must be positive integers.")
     
-    limit = size
     offset = (page - 1) * size
-
-    return PaginationParameters(limit=limit,offset=offset, page=page)
+    return PaginationParameters(limit=size,offset=offset, page=page)

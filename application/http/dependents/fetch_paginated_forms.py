@@ -15,6 +15,7 @@ class FetchPaginatedForm:
         self.pagination_params = pagination_params
 
     async def fetch(self, user: User) -> PaginationResource[Form]:
+        print("Limit", self.pagination_params.limit, user.id)
         forms_itr = []
         async with self.conn.execute(
             """
@@ -39,34 +40,12 @@ class FetchPaginatedForm:
                         user_id = ?
                     LIMIT ?
                     OFFSET ?
-                ), paginated_data AS (
-                    SELECT 
-                        lf.id AS id,
-                        lf.title AS title,
-                        lf.description AS description,
-                        lf.published_at AS published_at,
-                        lf.created_at AS created_at,
-                        fq.id AS question_id,
-                        fq.question AS question_question,
-                        fq.type AS question_type,
-                        fq.is_required AS question_is_required,
-                        fq.form_id AS question_form_id,
-                        fqc.id AS question_choice_id,
-                        fqc.choice AS question_choice_choice,
-                        fqc.question_id AS choice_question_id,
-                        lf.user_id AS user_id
-                    FROM 
-                        limited_forms lf
-                    LEFT JOIN 
-                        form_questions AS fq ON lf.id = fq.form_id
-                    LEFT JOIN 
-                        form_question_choices AS fqc ON fq.id = fqc.question_id
                 )
                 SELECT 
                     tc.total AS count, 
-                    pd.* 
+                    lf.* 
                 FROM 
-                    paginated_data pd
+                    limited_forms lf
                 CROSS JOIN 
                     total_count tc;
             """,
@@ -75,12 +54,11 @@ class FetchPaginatedForm:
                 user.id,
                 self.pagination_params.limit,
                 self.pagination_params.offset,
+
             ),
         ) as cur:
-            forms_itr = await cur.fetchmany()
-
+            forms_itr = await cur.fetchall()
         data, count = Form.parse_rows(forms_itr)
-
         return PaginationResource.get_paginated_object(
             count=count,
             data=data,

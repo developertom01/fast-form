@@ -14,7 +14,6 @@ from application.http.dependents import (
 from application.exceptions import UserNotLoggedInException, ValidationException
 import logging
 import json
-from utils.templates import templates
 
 logger = logging.getLogger(__name__)
 

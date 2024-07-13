@@ -5,8 +5,28 @@
 {% block content %}
 
 <section> 
-    <div> Hello! {{user.name}} </div>
+    <div class = "flex justify-end pt-5"> 
+        <p id="salutation"> Hello! <b>{{user.name}} </b>  </p>
+    </div>
 
-
+    <div class="pt-5">
+        <div>
+            <h4 class="text-xl font-bold"> Forms Created </h4>
+        </div>
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6 pt-5">
+            {% for form in forms.data %}
+                <a href="" class="w-[200px] h-[250px] border border-teal-500 p-3 flex flex-col">
+                    <p class = "font-bold"> {{form.title}} </p>
+                    <p class = "text-sm"> {{form.description}} </p>
+                    <div class = "mt-auto">
+                        <p class = "text-xs"><b>Published </b>: {{form.published_at}} </p>
+                        <p class = "text-xs"> <b>Created </b>: {{form.created_at}} </p>
+                    </div>
+                    
+                </a/>
+            {% endfor %}
+        </div>
+    </div>
+    
 </section>
 {% endblock  %}
