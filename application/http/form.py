@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, Response, Query
+from fastapi import APIRouter, Depends, Response
 from datetime import datetime
 from lib.form import FormBuilder
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from enum import Enum
-from application.models import User
+from application.models import User, Form
 from aiosqlite import Connection
 from internal.database import get_db
 from nanoid import generate
@@ -32,9 +32,8 @@ class DataTypeEnum(Enum):
 class FormQuestionRequestPayload(BaseModel):
     question: str
     type: DataTypeEnum
-    is_required: bool
+    required: bool
     choices: list[str] | None = Field(default=None, min_length=1, max_length=10)
-
 
 class CreateFormRequest(BaseModel):
     title: str
@@ -52,8 +51,8 @@ def get_published_at(published: bool):
 
 @form_route.post("/", name="create_form")
 async def create_form(
-    payload: CreateFormRequest,
-    user: User | None = Depends(login_required),
+    forms: CreateFormRequest,
+    user: User |None = Depends(login_required),
     db_conn: Connection = Depends(get_db),
 ):
     try:
@@ -62,31 +61,34 @@ async def create_form(
 
         # Validate
         form_builder = FormBuilder()
-        errors = form_builder.validate(payload.model_dump())
+        errors = form_builder.validate(forms.model_dump())
         if len(errors) != 0:
             raise ValidationException(errors)
         # Will be inserting in multiple tables so begin transaction
+        form_row = None
         async with db_conn.execute("begin") as cur:
             form_id = generate(size=32)
             now = datetime.now().isoformat()
-            published_at = get_published_at(payload.publish)
+            published_at = get_published_at(forms.publish)
             await cur.execute(
                 """
                     INSERT INTO forms (id, title, description, user_id, published_at, created_at)
                     VALUES(?,?,?,?,?,?)
+                    RETURNING id, title,description,published_at,created_at
                 """,
                 (
                     form_id,
-                    payload.title,
-                    payload.description,
+                    forms.title,
+                    forms.description,
                     user.id,
                     published_at,
                     now,
                 ),
             )
+            form_row = await cur.fetchone()
             questions = [
-                (generate(size=32), q.question, q.type, q.is_required, form_id)
-                for q in payload.questions
+                (generate(size=32), q.question, q.type.name, q.required, form_id)
+                for q in forms.questions
             ]
             await cur.executemany(
                 """
@@ -102,11 +104,10 @@ async def create_form(
                     questions[i][0],
                     c,
                 )
-                for i, q in enumerate(payload.questions)
-                if q.type == "choices" and q.choices is not None
+                for i, q in enumerate(forms.questions)
+                if q.type == DataTypeEnum.choice and q.choices is not None
                 for c in q.choices
             ]
-
             if len(question_choices) > 0:
                 await cur.executemany(
                     """
@@ -116,8 +117,9 @@ async def create_form(
                     question_choices,
                 )
             await cur.execute("commit;")
-
-        return Response(status_code=201)
+        print(form_row)
+        form = Form(id=form_row[0], title=form_row[1],description=form_row[2],published_at=form_row[3],create_at=form_row[4])
+        return Response(content=form.model_dump_json(), status_code=201)
 
     except Exception as e:
         logger.error(str(e))
@@ -131,7 +133,9 @@ async def create_form(
         elif isinstance(e, ValidationException):
             error = e.errors
             status = 400
-
+        elif isinstance(e, ValidationError):
+            error = e.json()
+            status = 400
         return Response(json.dumps({"detail": error}), status_code=status)
 
 
@@ -155,7 +159,7 @@ async def get_user_forms(
             )
 
             WITH paginated_data AS (
-                 forms.id AS id
+                forms.id AS id
                 forms.title AS title
                 forms.description AS description
                 forms.user_id AS user_id
@@ -186,6 +190,9 @@ async def get_user_forms(
             (user.id, pagination_params.limit, pagination_params.offset),
         ) as cur:
             forms_itr = await cur.fetchmany()
+        print(forms_itr)
+
+        return Response("Hello")
 
     except Exception as e:
         logger.error(str(e))

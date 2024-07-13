@@ -8,6 +8,7 @@ import logging
 from application.http.dependents import login_required
 from internal.cache import cache
 from utils.templates import templates
+import json
 
 verify_route = APIRouter()
 
@@ -70,7 +71,7 @@ async def verify_code(payload: VerifyTokenRequest):
         status = 403
 
     if is_error:
-        return Response({"detail": error}, status_code=status)
+        return Response(json.dumps({"detail": error}), status_code=status)
 
     session_key = nanoid.generate(size=32)
 
@@ -78,4 +79,7 @@ async def verify_code(payload: VerifyTokenRequest):
         "user_id": user.id,
         "time": datetime.now().isoformat(),
     }
-    return CliLogin(user=user, token=session_key)
+    response_body = CliLogin(user=user, token=session_key)
+    response = Response(response_body.model_dump_json(), status_code=200)
+    response.set_cookie(key="session", value=session_key, httponly=True)
+    return response

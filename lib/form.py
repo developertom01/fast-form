@@ -50,15 +50,59 @@ class FormBuilder:
                 data = json.load(file)
                 return data
 
-    def validate(self, data):
+    def validate(self, data: dict):
         errors = {}
-        for index, item in enumerate(data):
+        title_errors = []
+        if "title" not in data:
+            title_errors.append("Title of document is required")
+        elif not isinstance(data.get("title", ""), str):
+            title_errors.append("Title must be a string")
+        elif len(data.get("title", "")) < 10:
+            title_errors.append(
+                "Title must not be blank and must be more than 9 characters"
+            )
+
+        if len(title_errors) > 0:
+            errors["title"] = title_errors
+
+        description_errors = []
+        if "description" in data and not isinstance(
+            data.get("description", ""), str
+        ):
+            description_errors.append("Description must be string")
+
+        if len(description_errors) > 0:
+            errors["description"] = description_errors
+
+        published_errors = []
+        if "publish" not in data:
+            published_errors.append("Publish field is required")
+        elif not isinstance(data.get("publish", False), bool):
+            published_errors.append("Publish Must be boolean")
+
+        if len(published_errors) > 0:
+            errors["publish"] = published_errors
+
+        questions_errors = []
+        if "questions" not in data:
+            questions_errors.append("Questions field is required")
+        elif not isinstance(data["questions"], list):
+            questions_errors.append("Question must be an array")
+        elif len(data["questions"]) == 0:
+            questions_errors.append("Must provide at least one question")
+
+        if len(questions_errors) > 0:
+            errors["questions"] = questions_errors
+
+        questions: list = data.pop("questions", [])
+        question_item_errors = {}
+        for index, item in enumerate(questions):
             error_list = []
             if "question" not in item or not isinstance(item["question"], str):
                 error_list.append("Field 'question' is required and must be a string.")
             if "required" not in item or not isinstance(item["required"], bool):
                 error_list.append("Field 'required' is required and must be a boolean.")
-            if "type" not in item or item["type"] not in [
+            if "type" not in item or item["type"].name not in [
                 "text",
                 "number",
                 "boolean",
@@ -67,17 +111,18 @@ class FormBuilder:
                 error_list.append(
                     "Field 'type' is required and must be one of: 'text', 'number', 'boolean', 'choice'."
                 )
-            if item["type"] == "choice":
-                if (
-                    "choices" not in item
-                    or not isinstance(item["choices"], list)
-                    or len(item["choices"]) < 1
-                ):
-                    error_list.append(
-                        "For 'type' == 'choice', 'choices' field is required and must be a non-empty list of strings."
-                    )
+            if item["type"].name == "choice" and (
+                "choices" not in item
+                or not isinstance(item["choices"], list)
+                or len(item["choices"]) < 1
+            ):
+                error_list.append(
+                    "For 'type' == 'choice', 'choices' field is required and must be a non-empty list of strings."
+                )
             if error_list:
-                errors[index] = error_list
+                question_item_errors[index] = error_list
+        if len(question_item_errors) != 0:
+            errors["questions_list"] = question_item_errors
         return errors
 
     def validate_answer(self, item, answer):
