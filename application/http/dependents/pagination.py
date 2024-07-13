@@ -1,10 +1,7 @@
-from pydantic import BaseModel
+from application.models import PaginationParameters
+from fastapi import Query
 
-class PaginationParameters(BaseModel):
-    offset:int
-    limit:int
-
-def get_pagination_parameters(page:int, size:int):
+def get_pagination_parameters(page:int |None = Query(default=1), size:int | None =Query(default=12)):
     """
     Calculate the offset and limit for pagination.
 
@@ -21,4 +18,4 @@ def get_pagination_parameters(page:int, size:int):
     limit = size
     offset = (page - 1) * size
 
-    return PaginationParameters(limit=limit,offset=offset)
+    return PaginationParameters(limit=limit,offset=offset, page=page)
