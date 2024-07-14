@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<section> 
+<section class="flex flex-col h-full pb-10"> 
     <div class = "flex justify-end pt-5"> 
         <p id="salutation"> Hello! <b>{{user.name}} </b>  </p>
     </div>
@@ -26,6 +26,26 @@
                 </a/>
             {% endfor %}
         </div>
+    </div>
+    <div class="flex justify-start items-center gap-x-5 mt-auto" id="pagination">
+        {% if forms.page != 1 and forms.page != 2 %}
+        <a class="border border-teal-500 p-2" href="/?page1&size={{forms.size}}" >1</a>
+        <p> ... </p>
+        {% endif %}
+        {% if forms.page != 1 %}
+            <a class="border border-teal-500 p-2" href="/?page={{forms.page -1}}&size={{forms.size}}" > {{forms.page -1}}</a>
+        {% endif %}
+        <a class="border border-gray-500-500 p-2 cursor-not-allowed" disabled > {{forms.page}}</a>
+
+        {% if forms.page < forms.next and forms.next != forms.last%}
+            <a class="border border-teal-500 p-2" href="/?page={{forms.page +1}}&size={{forms.size}}" > {{forms.page + 1}}</a>
+        {% endif %}
+
+        {% if forms.next <= forms.last and forms.page < forms.last %}
+            <p> ... </p>
+            <a class="border border-teal-500 p-2" href="/?page={{forms.last}}&size={{forms.size}}" > {{forms.last}}</a>
+        {% endif %}
+
     </div>
     
 </section>
