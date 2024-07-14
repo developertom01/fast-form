@@ -1,52 +1,56 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title  %} Dashboard {% endblock %}
+{% block title %}
+  Dashboard
+{% endblock %}
 
 {% block content %}
-
-<section class="flex flex-col h-full pb-10"> 
-    <div class = "flex justify-end pt-5"> 
-        <p id="salutation"> Hello! <b>{{user.name}} </b>  </p>
+  <section class="flex flex-col h-full pb-10">
+    <div class="flex justify-end pt-5">
+      <p id="salutation">
+        Hello! <b>{{ user.name }}</b>
+      </p>
     </div>
 
     <div class="pt-5">
-        <div>
-            <h4 class="text-xl font-bold"> Forms Created </h4>
-        </div>
-        <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6 pt-5">
-            {% for form in forms.data %}
-                <a href="/forms/{{form.id}}" class="w-[200px] h-[250px] border border-teal-500 p-3 flex flex-col">
-                    <p class = "font-bold"> {{form.title}} </p>
-                    <p class = "text-sm"> {{form.description}} </p>
-                    <div class = "mt-auto">
-                        <p class = "text-xs"><b>Published </b>: {{form.published_at}} </p>
-                        <p class = "text-xs"> <b>Created </b>: {{form.created_at}} </p>
-                    </div>
-                    
-                </a/>
-            {% endfor %}
-        </div>
+      <div>
+        <h4 class="text-xl font-bold">Forms Created</h4>
+      </div>
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6 pt-5">
+        {% for form in forms.data %}
+          <a href="/forms/{{ form.id }}" class="w-[200px] h-[250px] border border-teal-500 p-3 flex flex-col">
+            <p class="font-bold">{{ form.title }}</p>
+            <p class="text-sm">{{ form.description }}</p>
+            <div class="mt-auto">
+              <p class="text-xs">
+                <b>Published</b>: {{ form.published_at }}
+              </p>
+              <p class="text-xs">
+                <b>Created</b>: {{ form.created_at }}
+              </p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
     </div>
     <div class="flex justify-start items-center gap-x-5 mt-auto" id="pagination">
-        {% if forms.page != 1 and forms.page != 2 %}
-        <a class="border border-teal-500 p-2" href="/?page1&size={{forms.size}}" >1</a>
-        <p> ... </p>
-        {% endif %}
-        {% if forms.page != 1 %}
-            <a class="border border-teal-500 p-2" href="/?page={{forms.page -1}}&size={{forms.size}}" > {{forms.page -1}}</a>
-        {% endif %}
-        <a class="border border-gray-500-500 p-2 cursor-not-allowed" disabled > {{forms.page}}</a>
+      {% if forms.page != 1 and forms.page != 2 %}
+        <a class="border border-teal-500 p-2" href="/?page1&size={{ forms.size }}">1</a>
+        <p>...</p>
+      {% endif %}
+      {% if forms.page != 1 %}
+        <a class="border border-teal-500 p-2" href="/?page={{ forms.page - 1 }}&size={{ forms.size }}">{{ forms.page - 1 }}</a>
+      {% endif %}
+      <a class="border border-gray-500-500 p-2 cursor-not-allowed" disabled>{{ forms.page }}</a>
 
-        {% if forms.page < forms.next and forms.next != forms.last%}
-            <a class="border border-teal-500 p-2" href="/?page={{forms.page +1}}&size={{forms.size}}" > {{forms.page + 1}}</a>
-        {% endif %}
+      {% if forms.page < forms.next and forms.next != forms.last %}
+        <a class="border border-teal-500 p-2" href="/?page={{ forms.page + 1 }}&size={{ forms.size }}">{{ forms.page + 1 }}</a>
+      {% endif %}
 
-        {% if forms.next <= forms.last and forms.page < forms.last %}
-            <p> ... </p>
-            <a class="border border-teal-500 p-2" href="/?page={{forms.last}}&size={{forms.size}}" > {{forms.last}}</a>
-        {% endif %}
-
+      {% if forms.next <= forms.last and forms.page < forms.last %}
+        <p>...</p>
+        <a class="border border-teal-500 p-2" href="/?page={{ forms.last }}&size={{ forms.size }}">{{ forms.last }}</a>
+      {% endif %}
     </div>
-    
-</section>
-{% endblock  %}
+  </section>
+{% endblock %}
