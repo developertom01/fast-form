@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+<style>
+    .grid-custom {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+</style>
+{% block title %}
+{% if form and form.title %}
+    Form: {{form.title}}
+{% else %}
+    Form: Not Found
+{% endif %}
+
+{% endblock  %}
+
+{% block content %}
+<section class="pt-5 flex flex-col">
+    <div>
+        <h2 class="font-bold text-2xl"> {{form.title}} </h2>
+        <p class="pt-3" >{{form.description}} </p>
+    </div>
+
+    <form>
+        <div class="grid grid-cols-3 gap-4">
+            {% for question in form.questions %}
+                <div class="flex flex-col items-center justify-center">
+                    <label class="flex-1" for="{{question.id}}"> {{question.question}} </label>
+                    <input class="outline outline-teal-400 p-2 rounded-sm flex-[4]" type="{{question.type}}" id="{{question.id}}" />
+                </div>
+            {% endfor %}
+        </div>
+        <div class = "flex items-center justify-center">
+            <div class="flex-1"></div>
+            <button form="loginForm" class="bg-teal-500 p-2 rounded-sm w-full text-white font-bold flex-[4]" type="submit"> Submit </button>
+        </div
+    </form>
+    
+
+</section>
+{% endblock  %}

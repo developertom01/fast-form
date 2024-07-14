@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, Request
 from fastapi.responses import RedirectResponse
 from datetime import datetime
 from lib.form import FormBuilder
@@ -15,6 +15,11 @@ from application.http.dependents import (
 from application.exceptions import UserNotLoggedInException, ValidationException
 import logging
 import json
+from application.exceptions import NotFoundError
+from utils.templates import templates
+from urllib import parse
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -171,11 +176,32 @@ async def get_user_forms(
 
 
 @form_route.get("/{form_id}")
-def get_form(
+async def get_form(
+    request: Request,
     form_id: str,
     user=Depends(login_required),
     forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
-    ): 
+):
     if user is None:
         logging.info("User not logged in, redirecting to /login")
-        return RedirectResponse(f"/login/?origin=web&redirect=/forms/{form_id}", status_code=303)
+        return RedirectResponse(
+            f"/login/?origin=web&redirect={parse.quote(f"/forms/{form_id}")}", status_code=303
+        )
+    try:
+        form = await forms_service.fetch_questions(form_id=form_id)
+        return templates.TemplateResponse(
+            request=request,
+            name="form-detail.html",
+            context={"form": form},
+        )
+    except Exception as e:
+        logger.error(e)
+        error = "Server error"
+        if isinstance(e, NotFoundError):
+            error = str(e)
+
+        return templates.TemplateResponse(
+            request=request,
+            name="form-detail.html",
+            context={"message": {"type": "error", "detail": error}},
+        )

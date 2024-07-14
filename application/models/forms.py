@@ -53,14 +53,18 @@ class Form(BaseModel):
             question_id = row[6]
             if question_id not in form["questions"]:
                 form["questions"][question_id] = {}
-            if "choices" not in form["questions"][question_id]:
+            if row[8] == "choice" and "choices" not in form["questions"][question_id]:
                 form["questions"][question_id]["choices"] = []
+            else:
+                form["questions"][question_id]["choices"] = None
+
             
             form["questions"][question_id]["id"] = row[6]
             form["questions"][question_id]["question"] = row[7]
             form["questions"][question_id]["type"] = row[8]
             form["questions"][question_id]["required"] = bool(row[9])
-            form["questions"][question_id]["choices"].append(row[10])
+            if isinstance(form["questions"][question_id]["choices"], list):
+                form["questions"][question_id]["choices"].append(row[10])
         
         form_model = Form(
             id= form["id"],
