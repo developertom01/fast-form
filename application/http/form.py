@@ -65,7 +65,7 @@ async def create_form(
             raise ValidationException(errors)
         # Will be inserting in multiple tables so begin transaction
         form_row = None
-        async with db_conn.execute("begin") as cur:
+        async with db_conn.execute("begin;") as cur:
             form_id = generate(size=32)
             now = datetime.now().isoformat()
             published_at = get_published_at(forms.publish)
@@ -121,12 +121,12 @@ async def create_form(
             title=form_row[1],
             description=form_row[2],
             published_at=form_row[3],
-            create_at=form_row[4],
+            created_at=form_row[4],
         )
         return Response(content=form.model_dump_json(), status_code=201)
 
     except Exception as e:
-        logger.error(str(e))
+        logger.error(e)
         status = 500
         error = "Server error"
 

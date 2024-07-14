@@ -53,7 +53,6 @@ class FetchPaginatedForm:
                 user.id,
                 self.pagination_params.limit,
                 self.pagination_params.offset,
-
             ),
         ) as cur:
             forms_itr = await cur.fetchall()
@@ -64,3 +63,34 @@ class FetchPaginatedForm:
             size=self.pagination_params.limit,
             page=self.pagination_params.page,
         )
+
+    async def fetch_questions(self, form_id: str):
+        form = {}
+        async with self.conn.execute(
+            """
+                WITH form_cte AS (
+                     SELECT 
+                        id,
+                        title,
+                        description,
+                        published_at,
+                        created_at
+                    FROM forms
+                    WHERE id=?
+                    LIMIT 1
+                )
+
+                SELECT 
+                    form.*,
+                    fq.id AS question_id,
+                    fq.question AS question_question,
+                    fq.type AS question_type,
+                    fq.is_required AS question_required,
+                    fqc.choice AS  question_choice
+                FROM form_cte AS form
+                LEFT JOIN form_questions AS fq ON form.id=fq.form_id
+                LEFT JOIN form_question_choices AS fqc ON fq.id=fqc.question_id
+            """,
+            (form_id,),
+        ) as cur:
+            ...

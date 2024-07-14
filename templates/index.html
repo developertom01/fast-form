@@ -18,9 +18,9 @@
       </div>
       <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6 pt-5">
         {% for form in forms.data %}
-          <a href="/forms/{{ form.id }}" class="w-[200px] h-[250px] border border-teal-500 p-3 flex flex-col">
+          <a href="/forms/{{ form.id }}" class="w-[200px] h-[250px] border border-teal-500 p-3 flex flex-col gap-y-3">
             <p class="font-bold">{{ form.title }}</p>
-            <p class="text-sm">{{ form.description }}</p>
+            <p class="text-sm truncate">{{ form.description }}</p>
             <div class="mt-auto">
               <p class="text-xs">
                 <b>Published</b>: {{ form.published_at }}
@@ -43,11 +43,11 @@
       {% endif %}
       <a class="border border-gray-500-500 p-2 cursor-not-allowed" disabled>{{ forms.page }}</a>
 
-      {% if forms.page < forms.next and forms.next != forms.last %}
+      {% if forms.page < forms.next %}
         <a class="border border-teal-500 p-2" href="/?page={{ forms.page + 1 }}&size={{ forms.size }}">{{ forms.page + 1 }}</a>
       {% endif %}
 
-      {% if forms.next <= forms.last and forms.page < forms.last %}
+      {% if forms.next <= forms.last and forms.next != forms.last %}
         <p>...</p>
         <a class="border border-teal-500 p-2" href="/?page={{ forms.last }}&size={{ forms.size }}">{{ forms.last }}</a>
       {% endif %}
