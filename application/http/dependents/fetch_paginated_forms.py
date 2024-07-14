@@ -3,7 +3,7 @@ from .pagination import get_pagination_parameters
 from internal.database import get_db
 from application.models import User, PaginationParameters, Form, PaginationResource
 from aiosqlite import Connection
-
+from application.exceptions import NotFoundError
 
 class FetchPaginatedForm:
     def __init__(
@@ -66,7 +66,7 @@ class FetchPaginatedForm:
         )
 
     async def fetch_questions(self, form_id: str):
-        form = {}
+        data = []
         async with self.conn.execute(
             """
                 WITH form_cte AS (
@@ -74,7 +74,8 @@ class FetchPaginatedForm:
                         id,
                         title,
                         description,
-                        published_at,
+                        user_id, 
+                        published_at, 
                         created_at
                     FROM forms
                     WHERE id=?
@@ -94,4 +95,8 @@ class FetchPaginatedForm:
             """,
             (form_id,),
         ) as cur:
-            ...
+            data = await cur.fetchall()
+        if len(data) == 0:
+            raise NotFoundError(f"Form with id {form_id} does not exist")
+        
+        return Form.parse_joined_single(data)

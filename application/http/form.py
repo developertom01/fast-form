@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Response
+from fastapi.responses import RedirectResponse
 from datetime import datetime
 from lib.form import FormBuilder
 from pydantic import BaseModel, Field, ValidationError
@@ -146,7 +147,7 @@ async def create_form(
 @form_route.get("/", response_model=PaginationResource[Form])
 async def get_user_forms(
     user: User | None = Depends(login_required),
-    fetch_form_service:FetchPaginatedForm = Depends(FetchPaginatedForm)
+    fetch_form_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
 ):
 
     try:
@@ -167,3 +168,14 @@ async def get_user_forms(
             error = "UnAuthorized"
 
         return Response(json.dumps({"detail": error}), status_code=status)
+
+
+@form_route.get("/{form_id}")
+def get_form(
+    form_id: str,
+    user=Depends(login_required),
+    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
+    ): 
+    if user is None:
+        logging.info("User not logged in, redirecting to /login")
+        return RedirectResponse(f"/login/?origin=web&redirect=/forms/{form_id}", status_code=303)

@@ -11,7 +11,7 @@ from application.http.dependents import login_required
 from application.models import User
 import re
 import logging
-
+from urllib import parse
 
 TEMPLATE_FILE_NAME = "login.html"
 
@@ -53,10 +53,12 @@ def validate_login_form(email: str, password: str):
     return errors, error_occurred
 
 
-def redirect_when_logged_in(user_id, origin: str, token: str | None = None):
+def redirect_when_logged_in(user_id, origin: str, token: str | None = None, redirect:str | None = None):
     url = "/"
-    if origin == "cli":
-        url = f"/login-cli-verify?origin=cli&token={token}"
+    if redirect:
+        url = redirect
+    elif origin == "cli":
+        url = f"/login-cli-verify?origin=cli&token={parse.quote(token)}"
 
     session_key = nanoid.generate(size=32)
     cache[f"session-{session_key}"] = {
@@ -75,6 +77,7 @@ async def submit_form(
     request: Request,
     origin: str = Query("web"),
     token: str = Query(""),
+    redirect: str = Query(""),
     email=Form(default=""),
     password=Form(default=""),
     conn: Connection = Depends(get_db),
@@ -129,4 +132,4 @@ async def submit_form(
             },
         )
 
-    return redirect_when_logged_in(user_id=user_id, origin=origin, token=token)
+    return redirect_when_logged_in(user_id=user_id, origin=origin, token=token, redirect=redirect)

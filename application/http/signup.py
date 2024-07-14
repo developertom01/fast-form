@@ -44,7 +44,6 @@ def validate_signup_form(email: str, password: str):
 @signup_router.post("/", name="submit-form")
 async def submit_form(
     request: Request,
-    response: Response,
     origin: str = Query("web"),
     email=Form(default=""),
     name=Form(default=""),
