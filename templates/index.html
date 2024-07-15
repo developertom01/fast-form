@@ -12,45 +12,54 @@
       </p>
     </div>
 
-    <div class="pt-5">
-      <div>
-        <h4 class="text-xl font-bold">Forms Created</h4>
+    {% if not form or not form.data %}
+      <div class="flex justify-center w-full">
+        <h3 class="text-2xl">No form Created</h3>
       </div>
-      <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 pt-5">
-        {% for form in forms.data %}
-          <a href="/forms/{{ form.id }}" class="w-[200px] h-[230px] border border-teal-500 p-3 flex flex-col gap-y-3">
-            <p class="font-bold">{{ form.title }}</p>
-            <p class="text-sm truncate">{{ form.description }}</p>
-            <div class="mt-auto">
-              <p class="text-xs">
-                <b>Published</b>: {{ form.published_at }}
-              </p>
-              <p class="text-xs">
-                <b>Created</b>: {{ form.created_at }}
-              </p>
-            </div>
-          </a>
-        {% endfor %}
+    {% else %}
+      <div class="pt-5">
+        <div>
+          <h4 class="text-xl font-bold">Forms Created</h4>
+        </div>
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 pt-5">
+          {% for form in forms.data %}
+            <a href="/forms/{{ form.id }}" class="w-[200px] h-[230px] border border-teal-500 p-3 flex flex-col gap-y-3">
+              <p class="font-bold">{{ form.title }}</p>
+              <p class="text-sm truncate">{{ form.description }}</p>
+              <div class="mt-auto">
+                <p class="text-xs">
+                  <b>Published</b>: {{ form.published_at }}
+                </p>
+                <p class="text-xs">
+                  <b>Created</b>: {{ form.created_at }}
+                </p>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
       </div>
-    </div>
-    <div class="flex justify-start items-center gap-x-5 mt-auto" id="pagination">
-      {% if forms.page != 1 and forms.page != 2 %}
-        <a class="border border-teal-500 p-2" href="/?page1&size={{ forms.size }}">1</a>
-        <p>...</p>
-      {% endif %}
-      {% if forms.page != 1 %}
-        <a class="border border-teal-500 p-2" href="/?page={{ forms.page - 1 }}&size={{ forms.size }}">{{ forms.page - 1 }}</a>
-      {% endif %}
-      <a class="border border-gray-500-500 p-2 cursor-not-allowed" disabled>{{ forms.page }}</a>
+    {% endif %}
 
-      {% if forms.page < forms.next %}
-        <a class="border border-teal-500 p-2" href="/?page={{ forms.page + 1 }}&size={{ forms.size }}">{{ forms.page + 1 }}</a>
-      {% endif %}
+    {% if form and form.data %}
+      <div class="flex justify-start items-center gap-x-5 mt-auto" id="pagination">
+        {% if forms.page != 1 and forms.page != 2 %}
+          <a class="border border-teal-500 p-2" href="/?page1&size={{ forms.size }}">1</a>
+          <p>...</p>
+        {% endif %}
+        {% if forms.page != 1 and form.count > 0 %}
+          <a class="border border-teal-500 p-2" href="/?page={{ forms.page - 1 }}&size={{ forms.size }}">{{ forms.page - 1 }}</a>
+        {% endif %}
+        <a class="border border-gray-500-500 p-2 cursor-not-allowed" disabled>{{ forms.page }}</a>
 
-      {% if forms.next <= forms.last and forms.next != forms.last %}
-        <p>...</p>
-        <a class="border border-teal-500 p-2" href="/?page={{ forms.last }}&size={{ forms.size }}">{{ forms.last }}</a>
-      {% endif %}
-    </div>
+        {% if forms.page < forms.next %}
+          <a class="border border-teal-500 p-2" href="/?page={{ forms.page + 1 }}&size={{ forms.size }}">{{ forms.page + 1 }}</a>
+        {% endif %}
+
+        {% if forms.next <= forms.last and forms.next != forms.last %}
+          <p>...</p>
+          <a class="border border-teal-500 p-2" href="/?page={{ forms.last }}&size={{ forms.size }}">{{ forms.last }}</a>
+        {% endif %}
+      </div>
+    {% endif %}
   </section>
 {% endblock %}
