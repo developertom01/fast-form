@@ -21,12 +21,13 @@
 
 </div>
 <script defer>
-    const codeEl = document.getElementById("code")
-    const code = codeEl.textContent
-    const copyEl = document.getElementById("copyCode")
-    const notifyel = document.getElementById("notify")
+    const codeEl = document.getElementById("code") // Element that contains code
+    const code = codeEl.textContent //Actual code extracted from code
+    const copyEl = document.getElementById("copyCode") // Button element that triggers click
+    const notifyel = document.getElementById("notify") // Element for notification when copied
 
     copyEl.addEventListener("click", async function(e){
+        e.preventDefault() //Prevent any weird behavior that could be caused by some browsers
        await navigator.clipboard.writeText(code)
        notifyel.innerHTML = '<p class="text-teal-400" >Copied!</p>'
 
