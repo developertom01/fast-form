@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 form_route = APIRouter()
 
 
-class DataTypeEnum(Enum):
+class DataTypeEnum(str, Enum):
     text = "text"
     number = "number"
     boolean = "boolean"
