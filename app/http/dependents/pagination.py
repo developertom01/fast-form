@@ -1,4 +1,4 @@
-from application.models import PaginationParameters
+from app.models import PaginationParameters
 from fastapi import Query
 
 def get_pagination_parameters(page:int |None = Query(default=1), size:int | None =Query(default=12)):

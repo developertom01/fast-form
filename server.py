@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import config
 from fastapi.staticfiles import StaticFiles
-from application.http import router
+from app.http import router
 
 
 app = FastAPI(

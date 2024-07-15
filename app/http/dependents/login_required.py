@@ -4,7 +4,7 @@ import logging
 from internal.cache import cache
 from internal.database import get_db
 from aiosqlite import Connection
-from application.models.user import User
+from app.models.user import User
 
 
 class NotLoginException(Exception):

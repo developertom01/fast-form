@@ -1,6 +1,6 @@
-from application.cli.login import authenticate, login
-from application.cli.logout import logout
-from application.cli.build_form import build
+from app.cli.login import authenticate, login
+from app.cli.logout import logout
+from app.cli.build_form import build
 from lib.form import FormBuilder
 import time
 import argparse

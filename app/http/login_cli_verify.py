@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, Request, Query, Response
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
-from application.models import CliLogin
+from app.models import CliLogin
 from datetime import datetime
 import nanoid
 import logging
-from application.http.dependents import login_required
+from app.http.dependents import login_required
 from internal.cache import cache
 from utils.templates import templates
 import json

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Depends, Query
 from utils.templates import templates
-from application.http.dependents import login_required, FetchPaginatedForm
+from app.http.dependents import login_required, FetchPaginatedForm
 from fastapi.responses import RedirectResponse
 import logging
 from urllib import parse

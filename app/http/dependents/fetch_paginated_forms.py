@@ -1,9 +1,9 @@
 from fastapi import Depends
 from .pagination import get_pagination_parameters
 from internal.database import get_db
-from application.models import User, PaginationParameters, Form, PaginationResource
+from app.models import User, PaginationParameters, Form, PaginationResource
 from aiosqlite import Connection
-from application.exceptions import NotFoundError
+from app.exceptions import NotFoundError
 from internal.cache import cache
 
 class FetchPaginatedForm:

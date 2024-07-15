@@ -1,6 +1,6 @@
 import os
 import requests
-from application.cli.models import UserConf
+from app.cli.models import UserConf
 import config
 import json
 import webbrowser
