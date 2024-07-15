@@ -92,7 +92,7 @@ def login():
     data = json.dumps({"code": code, "token": token})
 
     resp = requests.post(
-        f"{config.config["app_url"]}/login-cli-verify/verify", data=data
+        f"{base_url}/login-cli-verify/verify", data=data
     )
 
     status = resp.status_code

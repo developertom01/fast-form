@@ -1,7 +1,6 @@
 from app.cli.login import authenticate, login
 from app.cli.logout import logout
 from app.cli.build_form import build
-from lib.form import FormBuilder
 import time
 import argparse
 

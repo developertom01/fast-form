@@ -100,7 +100,7 @@ class FormBuilder:
                 error_list.append("Field 'question' is required and must be a string.")
             if "required" not in item or not isinstance(item["required"], bool):
                 error_list.append("Field 'required' is required and must be a boolean.")
-            if "type" not in item or item["type"].name not in [
+            if "type" not in item or item["type"] not in [
                 "text",
                 "number",
                 "boolean",
@@ -109,7 +109,7 @@ class FormBuilder:
                 error_list.append(
                     "Field 'type' is required and must be one of: 'text', 'number', 'boolean', 'choice'."
                 )
-            if item["type"].name == "choice" and (
+            if item["type"] == "choice" and (
                 "choices" not in item
                 or not isinstance(item["choices"], list)
                 or len(item["choices"]) < 1
