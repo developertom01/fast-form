@@ -15,13 +15,3 @@ COPY ./templates ./templates
 COPY ./utils ./utils
 COPY ./config.py ./config.py
 COPY ./server.py ./server.py
-
-RUN useradd -m fastForm
-
-# Change ownership of the application directory
-RUN chown -R fastForm:fastForm /opt/app
-
-USER fastForm
-
-# Ensure the script has execute permissions
-RUN chmod +x /opt/app/scripts/prod.sh
