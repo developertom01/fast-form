@@ -6,9 +6,9 @@
 
 <form class="h-full w-full flex flex-col gap-y-5 justify-center items-center" id = "signupForm" method="POST" >
     <h3 class="font-bold text-xl">Create Account here</h3>
-    <div class ="flex flex-col w-[500px] gap-y-4">
+    <div class ="flex flex-col w-[95%] md:w-[500px] gap-y-4">
         <div class = "flex flex-col gap-y-2">
-            <div class = "flex items-center justify-center">
+            <div class = "flex flex-col md:flex-row md:items-center justify-center gap-y-2">
                 <label class="flex-1" for="name"> Name: </label>
                 <input type="text" name="name" class="outline outline-teal-400 p-2 rounded-sm flex-[4]" id="name" />
             </div>
@@ -23,7 +23,7 @@
         </div>
 
       <div class = "flex flex-col gap-y-2">
-            <div class = "flex items-center justify-center">
+            <div class = "flex flex-col md:flex-row md:items-center justify-center gap-y-2">
                 <label class="flex-1" for="email"> Email: </label>
                 <input type="email" name="email" class="outline outline-teal-400 p-2 rounded-sm flex-[4]" id="email" />
             </div>
@@ -38,7 +38,7 @@
         </div>
     
         <div class = "flex flex-col gap-y-2">
-            <div class = "flex items-center justify-center">
+            <div class = "flex flex-col md:flex-row md:items-center justify-center gap-y-2">
                 <label class="flex-1" for="password"> Password: </label>
                 <input type="password" name="password" class="outline outline-teal-400 p-2 rounded-sm flex-[4]" id="password" />
             </div>
@@ -51,7 +51,7 @@
                     </div
             {% endif %}
         </div>
-        <div class="flex">
+        <div class="flex flex-col md:flex-row">
             <div class="flex-1"></div>
             <div class="flex-[4]">
                 Already have an account?
@@ -61,7 +61,7 @@
         </div>
      
 
-        <div class = "flex items-center justify-center">
+        <div class = "flex items-center justify-center flex-col md:flex-row">
             <div class="flex-1"></div>
             <button form="signupForm" class="bg-teal-500 p-2 rounded-sm w-full text-white font-bold flex-[4]" type="submit"> Signup </button>
         </div

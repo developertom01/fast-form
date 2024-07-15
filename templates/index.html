@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-  <section class="flex flex-col h-full pb-10">
+  <section class="flex flex-col gap-y-5 h-full pb-10">
     <div class="flex justify-end pt-5">
       <p id="salutation">
         Hello! <b>{{ user.name }}</b>
@@ -16,7 +16,7 @@
       <div>
         <h4 class="text-xl font-bold">Forms Created</h4>
       </div>
-      <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6 pt-5">
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 pt-5">
         {% for form in forms.data %}
           <a href="/forms/{{ form.id }}" class="w-[200px] h-[230px] border border-teal-500 p-3 flex flex-col gap-y-3">
             <p class="font-bold">{{ form.title }}</p>

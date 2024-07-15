@@ -1,10 +1,5 @@
 {% extends 'base.html' %}
 <style>
-    .grid-custom {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-    }
 </style>
 {% block title %}
 {% if form and form.title %}
@@ -35,7 +30,7 @@
 
         </div>
 
-        <form id={{form.id}} class="pt-10">
+        <form id="form" class="pt-10">
             <div class="flex flex-col gap-y-4">
                 {% for question in form.questions %}
                     <div class="flex flex-col gap-y-5 justify-center border border-dashed border-teal-400 p-3 rounded-md">
@@ -59,7 +54,7 @@
                 {% endfor %}
             </div>
             <div class="mt-4">
-                <button form={{form.id}} class="bg-teal-500 hover:bg-teal-600 transition-colors delay-200 py-2 px-10 rounded-sm text-white font-bold" type="submit"> Submit </button>
+                <button form="form" class="bg-teal-500 hover:bg-teal-600 transition-colors delay-200 py-2 px-10 rounded-sm text-white font-bold" type="submit"> Submit </button>
             </div>
         </form>
     </div>
