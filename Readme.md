@@ -2,6 +2,10 @@
 
 - This application contains program that allows you to load form questions from a json or yaml file and load them for users.
 
+## Requirements
+
+- Python version 3.12 or later
+
 ## Installation
 
 - Create python virtual environment and activate

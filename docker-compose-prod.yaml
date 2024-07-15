@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_ENV=${APP_ENV}
+      - APP_URL=${APP_URL}
+    volumes:
+      - ./db.sqlite:/opt/app/db.sqlite
+    command: ["./scripts/prod.sh"]
+
+  proxy:
+    image: nginx:1.27.0-alpine
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    command: [nginx-debug, '-g', 'daemon off;']
+    depends_on:
+      - app
+    ports:
+      - 80:80

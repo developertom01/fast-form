@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_ENV=${APP_ENV}
+      - APP_URL=${APP_URL}
+    volumes:
+      - ./db.sqlite:/opt/app/db.sqlite
+    network_mode: host
+    command: ["fastapi", "dev", "server.py"]
+
+  proxy:
+    image: nginx:1.27.0-alpine
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app
