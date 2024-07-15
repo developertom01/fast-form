@@ -26,8 +26,12 @@
     const copyEl = document.getElementById("copyCode") // Button element that triggers click
     const notifyel = document.getElementById("notify") // Element for notification when copied
 
+    if(!navigator.clipboard){
+         copyEl.remove()   
+    }
     copyEl.addEventListener("click", async function(e){
         e.preventDefault() //Prevent any weird behavior that could be caused by some browsers
+     
        await navigator.clipboard.writeText(code)
        notifyel.innerHTML = '<p class="text-teal-400" >Copied!</p>'
 
