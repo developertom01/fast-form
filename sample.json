@@ -1,0 +1,61 @@
+{
+    "title": "Customer Satisfaction Survey",
+    "description": "We value your feedback and want to understand your experience with our services. Please take a few minutes to complete this survey.",
+    "publish": true,
+    "questions": [
+      {
+        "question": "How would you rate the quality of our products?",
+        "type": "number",
+        "required": true
+      },
+      {
+        "question": "How satisfied are you with our customer service?",
+        "type": "number",
+        "required": true
+      },
+      {
+        "question": "How likely are you to recommend our services to others?",
+        "type": "number",
+        "required": true
+      },
+      {
+        "question": "Which of our products do you use most frequently?",
+        "type": "choice",
+        "required": true,
+        "choices": ["Product A", "Product B", "Product C", "Product D"]
+      },
+      {
+        "question": "How did you first hear about our company?",
+        "type": "choice",
+        "required": true,
+        "choices": ["Social Media", "Friend/Family", "Online Ad", "Other"]
+      },
+      {
+        "question": "What do you like most about our products/services?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "question": "What do you dislike about our products/services?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "question": "How often do you use our products/services?",
+        "type": "choice",
+        "required": true,
+        "choices": ["Daily", "Weekly", "Monthly", "Rarely"]
+      },
+      {
+        "question": "How can we improve our products/services?",
+        "type": "text",
+        "required": false
+      },
+      {
+        "question": "Do you have any additional comments or suggestions?",
+        "type": "text",
+        "required": false
+      }
+    ]
+  }
+  

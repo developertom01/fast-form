@@ -1,3 +1,58 @@
-- question: What subject is it
-  type: text
-  required: true
+title: Comprehensive Customer Feedback Survey
+description: >
+  We appreciate your feedback and would like to learn more about your experience with our products and services. 
+  Please take a few minutes to fill out this survey. 
+
+  Responding to this survey does not require you to log in or provide any form of authentication. 
+  All information provided will remain strictly anonymous.
+publish: true
+questions:
+  - question: How satisfied are you with our product quality?
+    type: number
+    required: true
+  - question: How do you usually find out about new products from our company?
+    type: choice
+    required: false
+    choices:
+      - Email
+      - Social Media
+      - Friends
+      - Advertisements
+  - question: Please rate our customer service.
+    type: number
+    required: true
+  - question: Which of our products do you use the most?
+    type: choice
+    required: true
+    choices:
+      - Product A
+      - Product B
+      - Product C
+      - Product D
+  - question: Would you recommend our products to others?
+    type: choice
+    required: true
+    choices:
+      - Yes
+      - No
+      - Maybe
+  - question: How often do you purchase our products?
+    type: choice
+    required: false
+    choices:
+      - Weekly
+      - Monthly
+      - Occasionally
+      - Rarely
+  - question: What features do you like most about our products?
+    type: text
+    required: false
+  - question: Do you have any suggestions for new products?
+    type: text
+    required: false
+  - question: On a scale of 1-10, how likely are you to purchase from us again?
+    type: number
+    required: true
+  - question: Any additional comments or feedback?
+    type: text
+    required: false

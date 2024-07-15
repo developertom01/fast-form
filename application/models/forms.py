@@ -55,7 +55,7 @@ class Form(BaseModel):
                 form["questions"][question_id] = {}
             if row[8] == "choice" and "choices" not in form["questions"][question_id]:
                 form["questions"][question_id]["choices"] = []
-            else:
+            elif row[8] != "choice":
                 form["questions"][question_id]["choices"] = None
 
             
