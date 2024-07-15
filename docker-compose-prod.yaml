@@ -2,9 +2,7 @@ version: "3.9"
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: sarptom/fast-form:latest
     environment:
       - APP_ENV=${APP_ENV}
       - APP_URL=${APP_URL}
