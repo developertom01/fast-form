@@ -25,7 +25,10 @@ def show_code(request: Request, user=Depends(login_required), token=Query(defaul
 
     if user is None:
         logging.info("User not logged in, redirecting to /login")
-        return RedirectResponse(f"/login/?redirect={parse.quote(f"/login-cli-verify/?origin=cli&token={token}")}", status_code=303)
+        return RedirectResponse(
+            f"/login/?redirect={parse.quote(f"/login-cli-verify/?origin=cli&token={token}")}",
+            status_code=303,
+        )
 
     cache[f"{code}.{token}"] = user
     return templates.TemplateResponse(

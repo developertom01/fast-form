@@ -20,7 +20,10 @@ async def index(
 ):
     if user is None:
         logging.info("User not logged in, redirecting to /login")
-        return RedirectResponse(f"/login/?origin={parse.quote("web")}&redirect={parse.quote(f"/?page={page}&size={size}")}", status_code=303)
+        return RedirectResponse(
+            f"/login/?origin={parse.quote("web")}&redirect={parse.quote(f"/?page={page}&size={size}")}",
+            status_code=303,
+        )
     form_resource = None
     try:
         form_resource = await forms_service.fetch(user=user)

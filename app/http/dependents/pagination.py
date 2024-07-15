@@ -1,7 +1,10 @@
 from app.models import PaginationParameters
 from fastapi import Query
 
-def get_pagination_parameters(page:int |None = Query(default=1), size:int | None =Query(default=12)):
+
+def get_pagination_parameters(
+    page: int | None = Query(default=1), size: int | None = Query(default=12)
+):
     """
     Calculate the offset and limit for pagination.
 
@@ -14,6 +17,6 @@ def get_pagination_parameters(page:int |None = Query(default=1), size:int | None
     """
     if page < 1 or size < 1:
         raise ValueError("Page and size must be positive integers.")
-    
+
     offset = (page - 1) * size
-    return PaginationParameters(limit=size,offset=offset, page=page)
+    return PaginationParameters(limit=size, offset=offset, page=page)

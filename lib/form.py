@@ -66,9 +66,7 @@ class FormBuilder:
             errors["title"] = title_errors
 
         description_errors = []
-        if "description" in data and not isinstance(
-            data.get("description", ""), str
-        ):
+        if "description" in data and not isinstance(data.get("description", ""), str):
             description_errors.append("Description must be string")
 
         if len(description_errors) > 0:

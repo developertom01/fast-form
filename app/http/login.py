@@ -53,7 +53,9 @@ def validate_login_form(email: str, password: str):
     return errors, error_occurred
 
 
-def redirect_when_logged_in(user_id, origin: str, token: str | None = None, redirect:str | None = None):
+def redirect_when_logged_in(
+    user_id, origin: str, token: str | None = None, redirect: str | None = None
+):
     url = "/"
     if redirect:
         url = redirect
@@ -132,4 +134,6 @@ async def submit_form(
             },
         )
 
-    return redirect_when_logged_in(user_id=user_id, origin=origin, token=token, redirect=redirect)
+    return redirect_when_logged_in(
+        user_id=user_id, origin=origin, token=token, redirect=redirect
+    )

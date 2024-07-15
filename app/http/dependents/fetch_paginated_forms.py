@@ -6,6 +6,7 @@ from aiosqlite import Connection
 from app.exceptions import NotFoundError
 from internal.cache import cache
 
+
 class FetchPaginatedForm:
     def __init__(
         self,
@@ -66,12 +67,12 @@ class FetchPaginatedForm:
             page=self.pagination_params.page,
         )
 
-    async def fetch_questions(self, form_id: str)->Form:
-        #Check if form data has been cached
-        form_data:Form | None = cache.get(f"form.{form_id}", None)
+    async def fetch_questions(self, form_id: str) -> Form:
+        # Check if form data has been cached
+        form_data: Form | None = cache.get(f"form.{form_id}", None)
         if form_data is not None:
             return form_data
-        
+
         data = []
         async with self.conn.execute(
             """
@@ -104,12 +105,11 @@ class FetchPaginatedForm:
         ) as cur:
             data = await cur.fetchall()
         if len(data) == 0:
-            raise NotFoundError(f"Form with id {form_id} does not exist")        
-        
-        form_data= Form.parse_joined_single(data)
+            raise NotFoundError(f"Form with id {form_id} does not exist")
 
-        #Cache form data
+        form_data = Form.parse_joined_single(data)
+
+        # Cache form data
         cache[f"form.{form_id}"] = form_data
 
         return form_data
-

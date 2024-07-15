@@ -12,12 +12,11 @@ from app.http.dependents import (
     login_required,
     FetchPaginatedForm,
 )
-from app.exceptions import (UserNotLoggedInException, ValidationException,NotFoundError)
+from app.exceptions import UserNotLoggedInException, ValidationException, NotFoundError
 import logging
 import json
 from utils.templates import templates
 from urllib import parse
-
 
 
 logger = logging.getLogger(__name__)
@@ -184,7 +183,8 @@ async def get_form(
     if user is None:
         logging.info("User not logged in, redirecting to /login")
         return RedirectResponse(
-            f"/login/?origin=web&redirect={parse.quote(f"/forms/{form_id}")}", status_code=303
+            f"/login/?origin=web&redirect={parse.quote(f"/forms/{form_id}")}",
+            status_code=303,
         )
     try:
         form = await forms_service.fetch_questions(form_id=form_id)

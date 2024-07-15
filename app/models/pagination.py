@@ -17,8 +17,8 @@ class PaginationResource(BaseModel, Generic[T]):
         last = 1
         if size != 0:
             last = math.ceil(count / size)
-        
-        next_page = page +1
+
+        next_page = page + 1
         if page == last:
             next_page = page
 
