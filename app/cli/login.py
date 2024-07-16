@@ -115,7 +115,7 @@ def login():
 
     if not is_logged_in:
         return None
-
+    print("You have successfully logged in ✅")
     return UserConf(id=user_id, email=email, name=name, token=token)
 
 

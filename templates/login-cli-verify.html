@@ -22,7 +22,7 @@
 </div>
 <script defer>
     const codeEl = document.getElementById("code") // Element that contains code
-    const code = codeEl.textContent //Actual code extracted from code
+    const code = codeEl.textContent.trim() //Actual code extracted from code
     const copyEl = document.getElementById("copyCode") // Button element that triggers click
     const notifyel = document.getElementById("notify") // Element for notification when copied
 

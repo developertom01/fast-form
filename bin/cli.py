@@ -4,7 +4,6 @@ from app.cli.build_form import build
 import time
 import argparse
 
-
 def add_args(parser):
     parser.add_argument(
         "action", help="Action to execute", choices=["signin", "signout", "build"]
@@ -33,12 +32,21 @@ def main():
                 quit(0)
     else:
         user = authenticate()
-        print("Hello ", user)
+        print("Hello! 👋🏼", user)
         time.sleep(1.5)
+        try:
 
-        data = build(path=args.file)
-
-        print(data)
+            build(path=args.file, session=user.token)
+        except Exception as e:
+            if str(e) == "NOT_LOGGED_IN":
+                print("Authentication failed 🚪. Redirecting you to login ...")
+                logout()
+                time.sleep(1)
+                user = login()
+                time.sleep(0.5)
+                build(path=args.file,session=user.token)
+            else:
+                print("ERROR 😕 : ",str(e))
 
 
 # Entry point
