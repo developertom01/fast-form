@@ -1,2 +1,2 @@
 ALTER TABLE forms
-ADD published_key TEXT
+ADD published_key TEXT UNIQUE

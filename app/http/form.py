@@ -192,7 +192,33 @@ async def get_form(
             status_code=303,
         )
     try:
-        form = await forms_service.fetch_questions(form_id=form_id)
+        form = await forms_service.fetch_questions(form_id=form_id,published_key=None, user_id=user.id)
+        return templates.TemplateResponse(
+            request=request,
+            name="form-detail.html",
+            context={"form": form},
+        )
+    except Exception as e:
+        logger.error(e)
+        error = "Server error"
+        if isinstance(e, NotFoundError):
+            error = str(e)
+
+        return templates.TemplateResponse(
+            request=request,
+            name="form-detail.html",
+            context={"message": {"type": "error", "detail": error}},
+        )
+
+
+@form_route.get("/published/{published_key}")
+async def get_form(
+    request: Request,
+    published_key: str,
+    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
+):
+    try:
+        form = await forms_service.fetch_questions(form_id=None, published_key=published_key)
         return templates.TemplateResponse(
             request=request,
             name="form-detail.html",
