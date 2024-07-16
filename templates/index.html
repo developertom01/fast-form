@@ -46,7 +46,7 @@
           <a class="border border-teal-500 p-2" href="/?page1&size={{ forms.size }}">1</a>
           <p>...</p>
         {% endif %}
-        {% if forms.page != 1 and form.count > 0 %}
+        {% if forms.page != 1%}
           <a class="border border-teal-500 p-2" href="/?page={{ forms.page - 1 }}&size={{ forms.size }}">{{ forms.page - 1 }}</a>
         {% endif %}
         <a class="border border-gray-500-500 p-2 cursor-not-allowed" disabled>{{ forms.page }}</a>

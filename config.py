@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 import os
-
 load_dotenv(".env")
 
 APP_STORAGE_FILE_NAME = ".fast_form"
