@@ -15,10 +15,8 @@
             <div class="w-full md:w-2/3 lg:w1/3 flex justify-between">
                 {% if not form.published_key %}
                     <a class="bg-blue-500 p-2 rounded-md text-white" href="/forms/{{form.id}}/publish">Publish Form</a>
-                    {% else %}
-                    <a class="bg-teal-400 p-2 rounded-md text-white" href="/forms/published/{{form.published_key}}">View Mode</a>
                 {% endif %}
-
+                <a class="bg-teal-400 p-2 rounded-md text-white" href="/forms/published/{{form.published_key}}">View Mode</a>
                 <a class="bg-red-500 p-2 rounded-md text-white" href="/forms/{{form.id}}/delete">Delete Form</a>
             </div>
            
