@@ -28,7 +28,7 @@ def main():
             try:
                 logout()
             finally:
-                print("You have successfully logged out")
+                print("You have successfully logged out 👋🏼")
                 quit(0)
     else:
         user = authenticate()

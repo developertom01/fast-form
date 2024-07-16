@@ -54,5 +54,5 @@ def upload_form(form:dict, session:str):
     elif response.status_code == 401 or response.status_code == 403:
         raise Exception("NOT_LOGGED_IN")
     else:
-        raise Exception("Unknown error: ")
+        raise Exception("Unknown error 🫣")
         
