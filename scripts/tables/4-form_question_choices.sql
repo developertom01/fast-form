@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS form_question_choices (
     choice TEXT NOT NULL,
     question_id TEXT,
 
-    FOREIGN KEY (question_id) REFERENCES form_questions(id)
+    FOREIGN KEY (question_id) REFERENCES form_questions(id) ON DELETE CASCADE
 )

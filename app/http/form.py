@@ -51,6 +51,91 @@ class CreateFormRequest(BaseModel):
 def get_published_at(published: bool):
     return datetime.now().isoformat() if published else None
 
+@form_route.get("/{form_id}/publish")
+async def publish_form(
+    request: Request,
+    form_id: str,
+    user=Depends(login_required),
+    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
+):
+    if user is None:
+        logging.info("User not logged in, redirecting to /login")
+        return RedirectResponse(
+            f"/login/?origin=web&redirect={parse.quote(f"/forms/{form_id}")}",
+            status_code=303,
+        )
+    try:
+        published_key=generate(size=32)
+        await forms_service.publish_form(form_id=form_id,published_key=published_key, user_id=user.id)
+        return RedirectResponse(f"/forms/published/{published_key}",status_code=303)
+    except Exception as e:
+        logger.error(e)
+        error = "Server error"
+        if isinstance(e, NotFoundError):
+            error = str(e)
+
+        return templates.TemplateResponse(
+            request=request,
+            name="form-detail.html",
+            context={"message": {"type": "error", "detail": error}},
+        )
+    
+@form_route.get("/{form_id}/unpublish")
+async def unpublish_form(
+    request: Request,
+    form_id: str,
+    user=Depends(login_required),
+    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
+):
+    if user is None:
+        logging.info("User not logged in, redirecting to /login")
+        return RedirectResponse(
+            f"/login/?origin=web&redirect={parse.quote(f"/forms/{form_id}")}",
+            status_code=303,
+        )
+    try:
+        await forms_service.unpublish_form(form_id=form_id, user_id=user.id)
+        return RedirectResponse(f"/forms/{form_id}",status_code=303)
+    except Exception as e:
+        logger.error(e)
+        error = "Server error"
+        if isinstance(e, NotFoundError):
+            error = str(e)
+
+        return templates.TemplateResponse(
+            request=request,
+            name="form-detail.html",
+            context={"message": {"type": "error", "detail": error}},
+        )
+
+@form_route.get("/{form_id}/delete")
+async def delete_form(
+    request: Request,
+    form_id: str,
+    user=Depends(login_required),
+    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
+):
+    if user is None:
+        logging.info("User not logged in, redirecting to /login")
+        return RedirectResponse(
+            f"/login/?origin=web&redirect={parse.quote(f"/forms/{form_id}")}",
+            status_code=303,
+        )
+    try:
+        await forms_service.delete_questions(form_id=form_id, user_id=user.id)
+        return RedirectResponse("/",status_code=303)
+    except Exception as e:
+        logger.error(e)
+        error = "Server error"
+        if isinstance(e, NotFoundError):
+            error = str(e)
+
+        return templates.TemplateResponse(
+            request=request,
+            name="form-detail.html",
+            context={"message": {"type": "error", "detail": error}},
+        )
+
 
 @form_route.post("/", name="create_form")
 async def create_form(
@@ -183,6 +268,7 @@ async def get_form(
     published_key: str,
     forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
 ):
+    print(published_key)
     try:
         form = await forms_service.fetch_questions(form_id=None, published_key=published_key)
         return templates.TemplateResponse(
@@ -201,7 +287,6 @@ async def get_form(
             name="published-form-view.html",
             context={"message": {"type": "error", "detail": error}},
         )
-
 
 @form_route.get("/{form_id}")
 async def get_form(

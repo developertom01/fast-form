@@ -5,6 +5,7 @@ from app.models import User, PaginationParameters, Form, PaginationResource
 from aiosqlite import Connection
 from app.exceptions import NotFoundError
 from internal.cache import cache
+from datetime import datetime
 
 
 class FetchPaginatedForm:
@@ -68,13 +69,14 @@ class FetchPaginatedForm:
             page=self.pagination_params.page,
         )
     def _embed_user_where(self,form_id:str |None, published_key:str |None, user_id:str|None):
+        
         if form_id is None and published_key is None:
             raise ValueError("Must provide either form key or published key")
         embedded_where = "WHERE"
         if form_id is not None:
             embedded_where = f"{embedded_where} id=?"
         elif published_key:
-            embedded_where = f"{embedded_where} (published_key is NOT NULL OR published_key=?) AND published_at IS NOT NULL"
+            embedded_where = f"{embedded_where} forms.published_key=?"
         return f"{embedded_where} AND user_id=?" if user_id is not None else embedded_where
 
     def _get_embedded_param(self, form_id:str, user_id:str | None):
@@ -126,3 +128,42 @@ class FetchPaginatedForm:
         cache[f"form.{form_id}"] = form_data
 
         return form_data
+
+    async def delete_questions(self, form_id: str, user_id:str) -> bool:
+        async with self.conn.execute(
+            """
+                DELETE FROM forms 
+                WHERE forms.id=? AND forms.user_id=?
+            """,
+           (form_id,user_id,)
+        ) as cur:
+            await cur.execute("commit")
+            del cache[f"form.{form_id}"]
+        return True 
+    
+    async def publish_form(self, form_id: str, user_id:str, published_key:str) -> bool:
+        now = datetime.now().isoformat()
+        async with self.conn.execute(
+            """
+                UPDATE forms
+                SET published_at=?,published_key=?
+                WHERE forms.id=? AND forms.user_id=?
+            """,
+           (now,published_key, form_id,user_id,)
+        ) as cur:
+          await cur.execute("commit")
+          del cache[f"form.{form_id}"]
+        return True
+    
+    async def unpublish_form(self, form_id: str, user_id:str) -> bool:
+        async with self.conn.execute(
+            """
+                UPDATE forms
+                SET published_at=NULL,published_key=NULL
+                WHERE forms.id=? AND forms.user_id=?
+            """,
+           (form_id,user_id,)
+        ) as cur:
+          await cur.execute("commit")
+          del cache[f"form.{form_id}"]
+        return True
