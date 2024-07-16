@@ -49,6 +49,10 @@ def upload_form(form:dict, session:str):
     response = requests.post(f"{config.get("app_url")}/forms", data=json.dumps(form),cookies={"session": session})
     if response.status_code == 201:
         print("Form created suceefully ✅")
+        data = response.json()
+        published_key = data.get("published_key") 
+        if data.get("published_at") is not None and published_key is not None:
+            print(f"Form is published successfully ⚡️ \n\n You can access published form at {config["app_url"]}/forms/published/{published_key}")
     elif response.status_code == 400:
         print("Validation error: ", response.json())
     elif response.status_code == 401 or response.status_code == 403:
