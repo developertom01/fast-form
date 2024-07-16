@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS form_questions (
     is_required BOOLEAN NOT NULL,
     form_id TEXT,
     
-    FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE
+    FOREIGN KEY (form_id) REFERENCES forms(id)
 )

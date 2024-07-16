@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS forms (
     published_at DATETIME,
     created_at DATETIME,
 
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id)
 )
