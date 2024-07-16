@@ -73,11 +73,14 @@ async def create_form(
             form_id = generate(size=32)
             now = datetime.now().isoformat()
             published_at = get_published_at(forms.publish)
+            published_key = None
+            if forms.publish:
+                published_key = generate(size=32)
             await cur.execute(
                 """
-                    INSERT INTO forms (id, title, description, user_id, published_at, created_at)
-                    VALUES(?,?,?,?,?,?)
-                    RETURNING id, title,description,published_at,created_at
+                    INSERT INTO forms (id, title, description, user_id, published_at, created_at,published_key)
+                    VALUES(?,?,?,?,?,?,?)
+                    RETURNING id, title,description,published_at,created_at,published_key
                 """,
                 (
                     form_id,
@@ -86,6 +89,7 @@ async def create_form(
                     user.id,
                     published_at,
                     now,
+                    published_key,
                 ),
             )
             form_row = await cur.fetchone()
@@ -126,6 +130,7 @@ async def create_form(
             description=form_row[2],
             published_at=form_row[3],
             created_at=form_row[4],
+            published_key = form_row[5]
         )
         return Response(content=form.model_dump_json(), status_code=201)
 

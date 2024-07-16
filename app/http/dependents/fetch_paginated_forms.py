@@ -34,7 +34,8 @@ class FetchPaginatedForm:
                         description, 
                         user_id, 
                         published_at, 
-                        created_at
+                        created_at,
+                        published_key
                     FROM 
                         forms
                     WHERE 
@@ -66,8 +67,13 @@ class FetchPaginatedForm:
             size=self.pagination_params.limit,
             page=self.pagination_params.page,
         )
+    def _embed_user_where(self, user_id:str|None):
+        return "AND user_id=?" if user_id is not None else ""
 
-    async def fetch_questions(self, form_id: str) -> Form:
+    def _get_embedded_param(self, form_id:str, user_id:str | None):
+        return (form_id, ) if user_id is None else (form_id, user_id, )
+        
+    async def fetch_questions(self, form_id: str,user_id:str | None = None) -> Form:
         # Check if form data has been cached
         form_data: Form | None = cache.get(f"form.{form_id}", None)
         if form_data is not None:
@@ -75,7 +81,7 @@ class FetchPaginatedForm:
 
         data = []
         async with self.conn.execute(
-            """
+            f"""
                 WITH form_cte AS (
                      SELECT 
                         id,
@@ -83,9 +89,10 @@ class FetchPaginatedForm:
                         description,
                         user_id, 
                         published_at, 
-                        created_at
+                        created_at,
+                        published_key
                     FROM forms
-                    WHERE id=?
+                    WHERE id=? {self._embed_user_where(user_id)}
                     LIMIT 1
                 )
 
@@ -101,7 +108,7 @@ class FetchPaginatedForm:
                 LEFT JOIN form_questions AS fq ON form.id=fq.form_id
                 LEFT JOIN form_question_choices AS fqc ON fq.id=fqc.question_id
             """,
-            (form_id,),
+            self._get_embedded_param(form_id,user_id),
         ) as cur:
             data = await cur.fetchall()
         if len(data) == 0:

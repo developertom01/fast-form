@@ -20,6 +20,7 @@ class Form(BaseModel):
     published_at: str | None = None
     created_at: str
     questions: list[FormQuestion] | None = None
+    published_key : str | None = None
 
     @staticmethod
     def parse_rows(rows: Iterable[Row]):
@@ -35,11 +36,13 @@ class Form(BaseModel):
                     description=row[3],
                     published_at=get_published_at_formatted(row[5]),
                     created_at=humanize.naturaltime(datetime.fromisoformat(row[6])),
+                    published_key= row[7]
                 )
             )
 
         return data, count
 
+    @staticmethod
     def parse_joined_single(rows: Iterable[Row]):
         form = {}
         for row in rows:
@@ -48,24 +51,25 @@ class Form(BaseModel):
             form["description"] = row[2]
             form["published_at"] = get_published_at_formatted(row[4])
             form["created_at"] = get_published_at_formatted(row[5])
+            form["published_key"] = get_published_at_formatted(row[6])
 
             if "questions" not in form:
                 form["questions"] = {}
 
-            question_id = row[6]
+            question_id = row[7]
             if question_id not in form["questions"]:
                 form["questions"][question_id] = {}
-            if row[8] == "choice" and "choices" not in form["questions"][question_id]:
+            if row[9] == "choice" and "choices" not in form["questions"][question_id]:
                 form["questions"][question_id]["choices"] = []
-            elif row[8] != "choice":
+            elif row[9] != "choice":
                 form["questions"][question_id]["choices"] = None
 
-            form["questions"][question_id]["id"] = row[6]
-            form["questions"][question_id]["question"] = row[7]
-            form["questions"][question_id]["type"] = row[8]
-            form["questions"][question_id]["required"] = bool(row[9])
+            form["questions"][question_id]["id"] = row[7]
+            form["questions"][question_id]["question"] = row[8]
+            form["questions"][question_id]["type"] = row[9]
+            form["questions"][question_id]["required"] = bool(row[10])
             if isinstance(form["questions"][question_id]["choices"], list):
-                form["questions"][question_id]["choices"].append(row[10])
+                form["questions"][question_id]["choices"].append(row[11])
 
         form_model = Form(
             id=form["id"],
@@ -73,6 +77,7 @@ class Form(BaseModel):
             description=form["description"],
             published_at=form["published_at"],
             created_at=form["created_at"],
+            published_key=form["published_key"],
             questions=[],
         )
 
