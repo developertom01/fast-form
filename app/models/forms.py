@@ -51,7 +51,7 @@ class Form(BaseModel):
             form["description"] = row[2]
             form["published_at"] = get_published_at_formatted(row[4])
             form["created_at"] = get_published_at_formatted(row[5])
-            form["published_key"] = get_published_at_formatted(row[6])
+            form["published_key"] = row[6]
 
             if "questions" not in form:
                 form["questions"] = {}

@@ -70,13 +70,12 @@ class FetchPaginatedForm:
     def _embed_user_where(self,form_id:str |None, published_key:str |None, user_id:str|None):
         if form_id is None and published_key is None:
             raise ValueError("Must provide either form key or published key")
-        embedded_where = ""
+        embedded_where = "WHERE"
         if form_id is not None:
-            embedded_where = "id=?"
+            embedded_where = f"{embedded_where} id=?"
         elif published_key:
-            embedded_where = "published_key=?"
-
-        return f"{embedded_where} AND user_id=?" if user_id is not None else ""
+            embedded_where = f"{embedded_where} published_key=?"
+        return f"{embedded_where} AND user_id=?" if user_id is not None else embedded_where
 
     def _get_embedded_param(self, form_id:str, user_id:str | None):
         return (form_id, ) if user_id is None else (form_id, user_id, )
@@ -100,7 +99,7 @@ class FetchPaginatedForm:
                         created_at,
                         published_key
                     FROM forms
-                    WHERE id=? {self._embed_user_where(user_id= user_id,form_id= form_id, published_key=published_key)}
+                    {self._embed_user_where(user_id= user_id,form_id= form_id, published_key=published_key)}
                     LIMIT 1
                 )
 
@@ -120,7 +119,7 @@ class FetchPaginatedForm:
         ) as cur:
             data = await cur.fetchall()
         if len(data) == 0:
-            raise NotFoundError(f"Form with id {form_id} does not exist")
+            raise NotFoundError(f"Form {form_id or published_key} does not exist")
 
         form_data = Form.parse_joined_single(data)
 
