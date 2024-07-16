@@ -221,7 +221,7 @@ async def get_form(
         form = await forms_service.fetch_questions(form_id=None, published_key=published_key)
         return templates.TemplateResponse(
             request=request,
-            name="form-detail.html",
+            name="published-form-view.html",
             context={"form": form},
         )
     except Exception as e:
@@ -232,6 +232,6 @@ async def get_form(
 
         return templates.TemplateResponse(
             request=request,
-            name="form-detail.html",
+            name="published-form-view.html",
             context={"message": {"type": "error", "detail": error}},
         )

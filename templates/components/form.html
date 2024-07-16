@@ -1,0 +1,51 @@
+<div class="h-full pt-5 flex flex-col w-full items-center justify-center mb-10">
+    {% if form %}
+    <div class="w-full md:w-2/3 lg:w1/3 flex flex-col">
+        <div class="py-2 border border-dashed border-teal-400 rounded-md">
+            <div class="p-5">
+                <h1 class="font-bold text-3xl"> {{form.title}} </h1>
+                <p class="pt-8" >{{form.description}} </p>
+            </div>
+            <div class="border-b border-teal-400 py-4"></div>
+            <div class="p-5">
+                <P><b> Published at: </b> {{form.published_at}}</P>
+                <i class="text-sm text-gray-600">Responding to this survey does not require a login or any form of authentication. All information provided will remain strictly anonymous.</i>
+            </div>
+            <div class="border-b border-teal-400 py-4"></div>
+            <div class="p-5">
+                <p class="text-sm text-red-600">* Indicates required question                </p>
+            </div>
+
+        </div>
+
+        <form id="form" class="pt-10">
+            <div class="flex flex-col gap-y-4">
+                {% for question in form.questions %}
+                    <div class="flex flex-col gap-y-5 justify-center border border-dashed border-teal-400 p-3 rounded-md">
+                        <label class="flex-1 flex items-center" for="{{question.id}}">
+                            {{question.question}} 
+                            {% if question.required %} 
+                                <i class="text-red-600"> *</i>
+                            {% endif %} 
+                        </label>
+                        {% if question.type == "choice" and question.choices %}
+                            <select {% if question.required %} required {% endif %} class="outline-none border-b border-gray-700 focus:border-teal-200 p-2 rounded-sm" name={{question.id}}>
+                                <option class="text-gray-500" value=""> Select Answer </option>
+                                {% for choice in question.choices %}
+                                    <option value={{choice}}> {{choice}} </option>
+                                {% endfor %}
+                            </select>
+                            {% else %}
+                            <input {% if question.required %} required {% endif %} name={{question.id}} placeholder="Enter your answer" class="outline-none border-b border-gray-700 focus:border-teal-200 p-2 rounded-sm" type="{{question.type}}" id="{{question.id}}" />
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="mt-4">
+                <button form="form" class="bg-teal-500 hover:bg-teal-600 transition-colors delay-200 py-2 px-10 rounded-sm text-white font-bold" type="submit"> Submit </button>
+            </div>
+        </form>
+    </div>
+
+    {% endif %}
+</div>
