@@ -24,16 +24,14 @@ async def index(
             f"/login/?origin={parse.quote("web")}&redirect={parse.quote(f"/?page={page}&size={size}")}",
             status_code=303,
         )
-    form_resource = None
     try:
         form_resource = await forms_service.fetch(user=user)
-
         return templates.TemplateResponse(
             request=request,
             name="index.html",
             context={
                 "title": "Dashboard",
-                "forms": form_resource.model_dump(),
+                "forms": form_resource,
                 "user": dict(user),
             },
         )
