@@ -74,7 +74,7 @@ class FetchPaginatedForm:
         if form_id is not None:
             embedded_where = f"{embedded_where} id=?"
         elif published_key:
-            embedded_where = f"{embedded_where} published_key=?"
+            embedded_where = f"{embedded_where} (published_key is NOT NULL OR published_key=?) AND published_at IS NOT NULL"
         return f"{embedded_where} AND user_id=?" if user_id is not None else embedded_where
 
     def _get_embedded_param(self, form_id:str, user_id:str | None):
@@ -85,7 +85,6 @@ class FetchPaginatedForm:
         form_data: Form | None = cache.get(f"form.{form_id}", None)
         if form_data is not None:
             return form_data
-
         data = []
         async with self.conn.execute(
             f"""

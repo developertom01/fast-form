@@ -17,8 +17,6 @@ def read_sql():
             sqls.append(sql)
             tables.append(filename)
     # Reverse order to run migration from top to bottom. Order is important
-    sqls.reverse()
-    tables.reverse()
     return sqls, tables
 
 

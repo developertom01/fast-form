@@ -177,6 +177,31 @@ async def get_user_forms(
 
         return Response(json.dumps({"detail": error}), status_code=status)
 
+@form_route.get("/published/{published_key}")
+async def get_form(
+    request: Request,
+    published_key: str,
+    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
+):
+    try:
+        form = await forms_service.fetch_questions(form_id=None, published_key=published_key)
+        return templates.TemplateResponse(
+            request=request,
+            name="published-form-view.html",
+            context={"form": form},
+        )
+    except Exception as e:
+        logger.error(e)
+        error = "Server error"
+        if isinstance(e, NotFoundError):
+            error = str(e)
+
+        return templates.TemplateResponse(
+            request=request,
+            name="published-form-view.html",
+            context={"message": {"type": "error", "detail": error}},
+        )
+
 
 @form_route.get("/{form_id}")
 async def get_form(
@@ -211,27 +236,3 @@ async def get_form(
         )
 
 
-@form_route.get("/published/{published_key}")
-async def get_form(
-    request: Request,
-    published_key: str,
-    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
-):
-    try:
-        form = await forms_service.fetch_questions(form_id=None, published_key=published_key)
-        return templates.TemplateResponse(
-            request=request,
-            name="published-form-view.html",
-            context={"form": form},
-        )
-    except Exception as e:
-        logger.error(e)
-        error = "Server error"
-        if isinstance(e, NotFoundError):
-            error = str(e)
-
-        return templates.TemplateResponse(
-            request=request,
-            name="published-form-view.html",
-            context={"message": {"type": "error", "detail": error}},
-        )
