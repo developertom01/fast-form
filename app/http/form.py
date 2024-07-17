@@ -101,6 +101,8 @@ async def api_publish_form(
         if isinstance(e, UserNotLoggedInException):
             error = "Unauthorized"
             status = 401
+        else:
+            raise e
 
         return Response(content=json.dumps({"detail": error}),status_code=status)
     

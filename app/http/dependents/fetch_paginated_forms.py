@@ -138,7 +138,8 @@ class FetchPaginatedForm:
            (form_id,user_id,)
         ) as cur:
             await cur.execute("commit")
-            del cache[f"form.{form_id}"]
+            if cache.get(f"form.{form_id}"):
+                del cache[f"form.{form_id}"]
         return True 
     
     async def publish_form(self, form_id: str, user_id:str, published_key:str) -> bool:
@@ -151,8 +152,9 @@ class FetchPaginatedForm:
             """,
            (now,published_key, form_id,user_id,)
         ) as cur:
-          await cur.execute("commit")
-          del cache[f"form.{form_id}"]
+            await cur.execute("commit")
+        if cache.get(f"form.{form_id}"):
+            del cache[f"form.{form_id}"]
         return True
     
     async def unpublish_form(self, form_id: str, user_id:str) -> bool:
@@ -165,5 +167,6 @@ class FetchPaginatedForm:
            (form_id,user_id,)
         ) as cur:
           await cur.execute("commit")
-          del cache[f"form.{form_id}"]
+        if cache.get(f"form.{form_id}"):
+            del cache[f"form.{form_id}"]        
         return True
