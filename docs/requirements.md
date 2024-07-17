@@ -104,7 +104,8 @@ Once the server is running, you can access the application in your web browser a
 - `config.py`: Configuration settings.
 - `server.py`: The main entry point for the FastAPI server.
 - `requirements.txt`: Python dependencies.
-- `scripts/`: Various utility scripts.
+- `scripts/`: Http server entry point.
+- `/bin/cli.py`: Cli entry point
 - `templates/`: HTML templates for the web application.
 
 ## Contributing
