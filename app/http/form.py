@@ -51,7 +51,7 @@ class CreateFormRequest(BaseModel):
 def get_published_at(published: bool):
     return datetime.now().isoformat() if published else None
 
-@form_route.get("/api/{form_id}/publish")
+@form_route.patch("/api/{form_id}/publish")
 async def api_publish_form(
     form_id: str,
     user=Depends(login_required),
@@ -78,7 +78,7 @@ async def api_publish_form(
 
         return Response(content=json.dumps({"detail": error}),status_code=status)
     
-@form_route.get("/api/{form_id}/delete")
+@form_route.delete("/api/{form_id}/delete")
 async def api_publish_form(
     form_id: str,
     user=Depends(login_required),
@@ -104,7 +104,7 @@ async def api_publish_form(
 
         return Response(content=json.dumps({"detail": error}),status_code=status)
     
-@form_route.get("/api/{form_id}/unpublish")
+@form_route.patch("/api/{form_id}/unpublish")
 async def api_unpublish_form(
     form_id: str,
     user=Depends(login_required),
