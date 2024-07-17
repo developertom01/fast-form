@@ -129,7 +129,7 @@ class FetchPaginatedForm:
 
         return form_data
 
-    async def delete_questions(self, form_id: str, user_id:str) -> bool:
+    async def delete_form(self, form_id: str, user_id:str) -> bool:
         async with self.conn.execute(
             """
                 DELETE FROM forms 

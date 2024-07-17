@@ -51,6 +51,86 @@ class CreateFormRequest(BaseModel):
 def get_published_at(published: bool):
     return datetime.now().isoformat() if published else None
 
+@form_route.get("/api/{form_id}/publish")
+async def api_publish_form(
+    form_id: str,
+    user=Depends(login_required),
+    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
+):
+    try:
+        if user is None:
+            logging.info("User not logged in")
+            raise UserNotLoggedInException("")
+        
+        published_key=generate(size=32)
+        await forms_service.publish_form(form_id=form_id,published_key=published_key, user_id=user.id)
+        return {"status":"ok"}
+    except Exception as e:
+        logger.error(e)
+        error = "Internal server error"
+        status = 500
+        if isinstance(e, NotFoundError):
+            error = str(e)
+            status = 404
+        if isinstance(e, UserNotLoggedInException):
+            error = "Unauthorized"
+            status = 401
+
+        return Response(content=json.dumps({"detail": error}),status_code=status)
+    
+@form_route.get("/api/{form_id}/delete")
+async def api_publish_form(
+    form_id: str,
+    user=Depends(login_required),
+    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
+):
+    try:
+        if user is None:
+            logging.info("User not logged in")
+            raise UserNotLoggedInException("")
+        
+        await forms_service.delete_form(form_id=form_id, user_id=user.id)
+        return Response(status_code=202)
+    except Exception as e:
+        logger.error(e)
+        error = "Internal server error"
+        status = 500
+        if isinstance(e, NotFoundError):
+            error = str(e)
+            status = 404
+        if isinstance(e, UserNotLoggedInException):
+            error = "Unauthorized"
+            status = 401
+
+        return Response(content=json.dumps({"detail": error}),status_code=status)
+    
+@form_route.get("/api/{form_id}/unpublish")
+async def api_unpublish_form(
+    form_id: str,
+    user=Depends(login_required),
+    forms_service: FetchPaginatedForm = Depends(FetchPaginatedForm),
+):
+    try:
+        if user is None:
+            logging.info("User not logged in")
+            raise UserNotLoggedInException("")
+        
+        await forms_service.unpublish_form(form_id=form_id, user_id=user.id)
+        return {"status":"ok"}
+    except Exception as e:
+        logger.error(e)
+        error = "Internal server error"
+        status = 500
+        if isinstance(e, NotFoundError):
+            error = str(e)
+            status = 404
+        if isinstance(e, UserNotLoggedInException):
+            error = "Unauthorized"
+            status = 401
+
+        return Response(content=json.dumps({"detail": error}),status_code=status)
+       
+
 @form_route.get("/{form_id}/publish")
 async def publish_form(
     request: Request,
@@ -67,7 +147,8 @@ async def publish_form(
     try:
         published_key=generate(size=32)
         await forms_service.publish_form(form_id=form_id,published_key=published_key, user_id=user.id)
-        return RedirectResponse(f"/forms/published/{published_key}",status_code=303)
+        return  RedirectResponse(f"/forms/published/{published_key}",status_code=303)
+    
     except Exception as e:
         logger.error(e)
         error = "Server error"
@@ -80,6 +161,7 @@ async def publish_form(
             context={"message": {"type": "error", "detail": error}},
         )
     
+
 @form_route.get("/{form_id}/unpublish")
 async def unpublish_form(
     request: Request,
@@ -122,7 +204,7 @@ async def delete_form(
             status_code=303,
         )
     try:
-        await forms_service.delete_questions(form_id=form_id, user_id=user.id)
+        await forms_service.delete_form(form_id=form_id, user_id=user.id)
         return RedirectResponse("/",status_code=303)
     except Exception as e:
         logger.error(e)
