@@ -65,8 +65,24 @@ Run the database migrations to set up the database schema:
 ```sh
 python scripts/migrate_db_tables.py
 ```
+## Setup .env
+
+- Create a .env file in the root of your application
+- Copy the content of the .env.example into .env
+
+## Accessing web server
+    Note that there is a webserver deployed to AWS cloud. Access it in [http://54.82.18.30](http://54.82.18.30)
+    It is recommended to setup in http://54.82.18.30 by passing the variable APP_URL in your .env file to APP_URL. 
+    This is the default set when you copy the .example.env to .env
+```.env
+APP_URL=http://54.82.18.30
+```
 
 ## Running the HTTP Server
+if you want to run the server locally make sure you change the APP_URL to `http://127.0.0.1:8000`
+```.env
+APP_URL=http://127.0.0.1:8000
+```
 
 ### Using Uvicorn
 
